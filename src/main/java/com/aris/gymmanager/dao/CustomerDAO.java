@@ -17,6 +17,7 @@ public class CustomerDAO implements ICustomerDAO {
     @Autowired
     public CustomerDAO(EntityManager entityManager) {
         this.entityManager = entityManager;
+        int x = 1;
     }
 
     //implement save method
