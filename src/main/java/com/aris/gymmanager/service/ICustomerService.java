@@ -1,10 +1,10 @@
-package com.aris.gymmanager.dao;
+package com.aris.gymmanager.service;
 
 import com.aris.gymmanager.model.Customer;
 
 import java.util.List;
 
-public interface ICustomerDAO {
+public interface ICustomerService {
 
     void save(Customer theCustomer);
 

@@ -1,13 +1,12 @@
-package com.aris.gymmanager.entity;
+package com.aris.gymmanager.model;
 
 import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name="subscribes")
-public class Subscribes {
+public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="subscription_id")
@@ -15,19 +14,19 @@ public class Subscribes {
 
 
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
-    private int customer_id;
+    private int customerId;
 
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id")
-    private int plan_id;
+    private int planId;
 
     @Column(name="start_date")
     private Date startDate;
     @Column(name="end_date")
     private Date endDate;
 
-    public Subscribes(int customer_id, int plan_id, Date startDate, Date endDate) {
-        this.customer_id = customer_id;
-        this.plan_id = plan_id;
+    public Subscription(int customerId, int planId, Date startDate, Date endDate) {
+        this.customerId = customerId;
+        this.planId = planId;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -40,20 +39,20 @@ public class Subscribes {
         this.id = id;
     }
 
-    public int getCustomer_id() {
-        return customer_id;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(int customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
-    public int getPlan_id() {
-        return plan_id;
+    public int getPlanId() {
+        return planId;
     }
 
-    public void setPlan_id(int plan_id) {
-        this.plan_id = plan_id;
+    public void setPlanId(int planId) {
+        this.planId = planId;
     }
 
     public Date getStartDate() {
@@ -76,8 +75,8 @@ public class Subscribes {
     public String toString() {
         return "Subscribes{" +
                 "id=" + id +
-                ", customer_id=" + customer_id +
-                ", plan_id=" + plan_id +
+                ", customer_id=" + customerId +
+                ", plan_id=" + planId +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';

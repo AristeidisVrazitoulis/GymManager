@@ -1,11 +1,9 @@
 package com.aris.gymmanager.dao;
 
 
-import com.aris.gymmanager.entity.Customer;
-import com.aris.gymmanager.entity.Subscribes;
+import com.aris.gymmanager.model.Customer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +22,6 @@ public class CustomerDAO implements ICustomerDAO {
 
     //implement save method
     @Override
-    @Transactional
     public void save(Customer theCustomer){
         entityManager.persist((theCustomer));
     }
@@ -49,13 +46,11 @@ public class CustomerDAO implements ICustomerDAO {
     }
 
     @Override
-    @Transactional
     public void update(Customer theCustomer) {
         entityManager.merge(theCustomer);
     }
 
     @Override
-    @Transactional
     public void deleteCustomerById(int id) {
         Customer customer = findCustomerById(id);
         entityManager.remove(customer);
