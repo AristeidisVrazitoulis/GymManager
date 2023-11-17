@@ -1,4 +1,4 @@
-package com.aris.gymmanager.controller;
+package com.aris.gymmanager.restcontroller;
 
 
 import com.aris.gymmanager.model.Customer;
@@ -8,7 +8,6 @@ import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -44,13 +43,9 @@ public class CustomerController {
     public Customer createCustomer(@RequestBody Customer customer){
         // Just in case someone passes an id set it to zero
         customer.setId(0);
-
         customerService.save(customer);
-
         return customer;
-
     }
-
 
     @PutMapping("/customers")
     public Customer updateCustomer(@RequestBody Customer customer){
@@ -76,6 +71,18 @@ public class CustomerController {
         }
         Subscription theSubscription = subscriptionService.createSubscription(customerId, planName);
         subscriptionService.saveSubscription(theSubscription);
+        return theSubscription;
+    }
+
+    // customer that unsubscribes
+    @DeleteMapping("/customers/subscribes/{subscriptionId}")
+    public Subscription unsubscribeCustomer(@PathVariable int subscriptionId){
+
+        Subscription theSubscription = subscriptionService.findSubscriptionById(subscriptionId);
+        if(theSubscription == null){
+            throw new RuntimeException("Subscription id:"+subscriptionId+" not Found");
+        }
+        subscriptionService.deleteSubscriptionById(subscriptionId);
         return theSubscription;
     }
 

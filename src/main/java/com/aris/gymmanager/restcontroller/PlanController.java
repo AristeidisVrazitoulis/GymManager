@@ -1,7 +1,6 @@
-package com.aris.gymmanager.controller;
+package com.aris.gymmanager.restcontroller;
 
 
-import com.aris.gymmanager.model.Customer;
 import com.aris.gymmanager.model.Plan;
 import com.aris.gymmanager.service.IPlanService;
 import org.springframework.beans.factory.annotation.Autowired;

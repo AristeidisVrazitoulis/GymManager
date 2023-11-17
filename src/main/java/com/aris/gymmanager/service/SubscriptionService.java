@@ -1,5 +1,6 @@
 package com.aris.gymmanager.service;
 
+import com.aris.gymmanager.model.Customer;
 import com.aris.gymmanager.model.Plan;
 import com.aris.gymmanager.model.Subscription;
 import com.aris.gymmanager.repository.ICustomerRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubscriptionService implements ISubscriptionService{
@@ -22,6 +24,18 @@ public class SubscriptionService implements ISubscriptionService{
     public SubscriptionService(IPlanRepository planRepository, ISubscriptionRepository subscriptionRepository){
         this.planRepository = planRepository;
         this.subscriptionRepository = subscriptionRepository;
+    }
+
+    @Override
+    public Subscription findSubscriptionById(int subscriptionId) {
+        Optional<Subscription> result = subscriptionRepository.findById(subscriptionId);
+        Subscription theSubscription = null;
+        if(result.isPresent()){
+            theSubscription = result.get();
+        } else {
+            throw new RuntimeException("Customer not found - id :"+subscriptionId);
+        }
+        return theSubscription;
     }
 
     @Override
@@ -51,5 +65,10 @@ public class SubscriptionService implements ISubscriptionService{
     @Override
     public void saveSubscription(Subscription subscription){
         subscriptionRepository.save(subscription);
+    }
+
+    @Override
+    public void deleteSubscriptionById(int subscriptionId){
+        subscriptionRepository.deleteById(subscriptionId);
     }
 }
