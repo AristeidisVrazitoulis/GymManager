@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 import java.lang.reflect.Type;
-@Controller
 
+@Controller
 public class CustomerViewController {
 
 
@@ -30,15 +30,12 @@ public class CustomerViewController {
     public String index(){
         return "index";
     }
+
     @GetMapping("/customer-info/{customerId}")
     public String getCustomerInfo(@PathVariable int customerId, Model theModel) throws IOException{
-
         Response response = getCustomerByIdCall(customerId);
-
         Gson gson = new Gson();
-
         Customer customer = gson.fromJson(response.body().string(), Customer.class);
-//        System.out.println(customer);
         theModel.addAttribute("customer", customer);
         return "customer/info";
     }
@@ -98,19 +95,23 @@ public class CustomerViewController {
     @PostMapping("/customer-save")
     public String saveCustomer(@ModelAttribute("customer") Customer customer, @RequestParam String planName) throws IOException{
 
-        System.out.println(planName);
         createCustomerCall(customer);
         return "redirect:/customer-list";
 
     }
 
     private void createCustomerCall(Customer customer) throws IOException {
+        String content;
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("application/json");
 
-
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "{\r\n    \"firstName\" : \""+customer.getFirstName()+"\",\r\n    \"lastName\" : \""+customer.getLastName()+"\"\r\n}");
+        if(customer.getId() != 0) {
+            content = "{\r\n  \"id\" : \""+customer.getId()+"\",\r\n  \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
+        } else {
+            content = "{\r\n    \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
+        }
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, content);
         Request request = new Request.Builder()
                 .url("http://localhost:8080/api/customers")
                 .method("POST", body)
@@ -121,7 +122,6 @@ public class CustomerViewController {
 
     @GetMapping("/customer-edit")
     public String editCustomer(@RequestParam("customerId") int customerId, Model theModel) throws IOException{
-        System.out.println(customerId);
         Response response = getCustomerByIdCall(customerId);
 
         Gson gson = new Gson();
@@ -133,11 +133,9 @@ public class CustomerViewController {
     }
 
 
-    @DeleteMapping("/customer-delete/{customerId}")
-    public String deleteCustomer(@PathVariable int customerId) throws IOException{
-        System.out.println("cust id: "+customerId);
+    @GetMapping("/customer-delete")
+    public String deleteCustomer(@RequestParam("customerId") int customerId) throws IOException{
         deleteCustomerCall(customerId);
-        System.out.println("custsss id: "+customerId);
         // theModel.addAttribute("Message", "Deleted Successfully");
         return "redirect:/customer-list";
     }

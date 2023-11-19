@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 @Table(name="customer")
 public class Customer {
 
+    // TODO: Add more fields
+    // TODO: Model Validation
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="customer_id")

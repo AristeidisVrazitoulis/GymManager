@@ -26,7 +26,7 @@ public class PlanController {
     }
 
     @GetMapping("/plans/{planId}")
-    public Plan findCustomerById(@PathVariable int planId){
+    public Plan findPlanById(@PathVariable int planId){
 
         Plan customer = planService.findPlanById(planId);
         if(customer == null){
@@ -38,7 +38,6 @@ public class PlanController {
     @PostMapping("/plans")
     public Plan createPlan(@RequestBody Plan plan){
         // Just in case someone passes an id set it to zero
-        plan.setId(0);
 
         planService.save(plan);
 

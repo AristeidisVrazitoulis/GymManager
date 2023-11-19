@@ -12,9 +12,7 @@ public interface ICustomerService {
 
     List<Customer> findAll();
 
-    List<Customer> findByLastName(String lastName);
-
-    void update(Customer theCustomer);
+    List<Customer> findCustomerByLastName(String lastName);
 
     void deleteCustomerById(int id);
 }

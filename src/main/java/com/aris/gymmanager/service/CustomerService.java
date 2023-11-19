@@ -26,6 +26,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void save(Customer theCustomer) {
+        System.out.println("After: "+theCustomer.getId());
         customerRepository.save(theCustomer);
     }
 
@@ -47,15 +48,10 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public List<Customer> findByLastName(String lastName) {
-        return customerRepository.findByLastName(lastName);
+    public List<Customer> findCustomerByLastName(String lastName) {
+        return customerRepository.findCustomerByLastName(lastName);
     }
 
-    @Override
-    public void update(Customer theCustomer) {
-
-        // customerRepository.update(theCustomer);
-    }
 
     @Override
     public void deleteCustomerById(int id) {

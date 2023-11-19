@@ -39,17 +39,20 @@ public class CustomerController {
         return customer;
     }
 
-    @PostMapping("/customers")
-    public Customer createCustomer(@RequestBody Customer customer){
-        // Just in case someone passes an id set it to zero
-        customer.setId(0);
-        customerService.save(customer);
+    @GetMapping("/customers/search")
+    public List<Customer> findCustomerByLastName(@RequestParam String lastName){
+        List<Customer> customer = customerService.findCustomerByLastName(lastName);
+        if(customer == null){
+            throw new RuntimeException("Customer last name:"+lastName+" not Found");
+        }
         return customer;
     }
 
-    @PutMapping("/customers")
-    public Customer updateCustomer(@RequestBody Customer customer){
-        customerService.update(customer);
+    @PostMapping("/customers")
+    public Customer createCustomer(@RequestBody Customer customer){
+        // Just in case someone passes an id set it to zero
+        // customer.setId(0);
+        customerService.save(customer);
         return customer;
     }
 

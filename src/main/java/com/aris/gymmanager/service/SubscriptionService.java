@@ -40,7 +40,7 @@ public class SubscriptionService implements ISubscriptionService{
 
     @Override
     public Subscription createSubscription(int customerId, String title){
-        List<Plan> plans = planRepository.findByTitle(title);
+        List<Plan> plans = planRepository.findPlanByTitle(title);
         if(plans == null){
             throw new RuntimeException("Plan '"+title+"' not found");
         }
