@@ -1,5 +1,6 @@
-package com.aris.gymmanager.model;
+package com.aris.gymmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +19,11 @@ public class Customer {
 
     @Column(name="last_name")
     private String lastName;
+
+    @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name="plan_id")
+    @JsonBackReference
+    private Plan plan;
 
     public Customer(){
 
@@ -51,12 +57,21 @@ public class Customer {
         this.lastName = lastName;
     }
 
+    public Plan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(Plan plan) {
+        this.plan = plan;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", plan=" + plan +
                 '}';
     }
 }

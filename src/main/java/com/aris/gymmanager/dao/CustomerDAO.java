@@ -1,7 +1,7 @@
 package com.aris.gymmanager.dao;
 
 
-import com.aris.gymmanager.model.Customer;
+import com.aris.gymmanager.entity.Customer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;

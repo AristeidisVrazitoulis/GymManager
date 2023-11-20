@@ -1,8 +1,9 @@
-package com.aris.gymmanager.controller;
+package com.aris.gymmanager.mvccontroller;
 
 
 
-import com.aris.gymmanager.model.Customer;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Customer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.Type;
 
@@ -57,9 +59,12 @@ public class CustomerViewController {
 
         Response response = getAllCustomersCall();
         Gson gson = new Gson();
-        Type listType = new TypeToken<List<Customer>>() {}.getType();
+        Type listType = new TypeToken<List<CustomerDTO>>() {}.getType();
 
-        List<Customer> customers = gson.fromJson(response.body().string(), listType);
+        List<CustomerDTO> customers = gson.fromJson(response.body().string(), listType);
+
+
+
         model.addAttribute("customers", customers);
         model.addAttribute("total", customers.size());
 
@@ -74,7 +79,7 @@ public class CustomerViewController {
                     .build();
             MediaType mediaType = MediaType.parse("text/plain");
             Request request = new Request.Builder()
-                    .url("http://localhost:8080/api/customers")
+                    .url("http://localhost:8080/api/customers-plan")
                     .build();
 
             response = client.newCall(request).execute();
@@ -93,7 +98,7 @@ public class CustomerViewController {
     }
 
     @PostMapping("/customer-save")
-    public String saveCustomer(@ModelAttribute("customer") Customer customer, @RequestParam String planName) throws IOException{
+    public String saveCustomer(@ModelAttribute("customer") Customer customer) throws IOException{
 
         createCustomerCall(customer);
         return "redirect:/customer-list";
@@ -106,6 +111,7 @@ public class CustomerViewController {
                 .build();
         MediaType mediaType = MediaType.parse("application/json");
 
+        // Update or Create
         if(customer.getId() != 0) {
             content = "{\r\n  \"id\" : \""+customer.getId()+"\",\r\n  \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
         } else {

@@ -1,13 +1,12 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.model.Subscription;
-
-import java.util.Date;
+import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.entity.Subscription;
 
 public interface ISubscriptionService {
 
     Subscription findSubscriptionById(int subscriptionId);
-    Subscription createSubscription(int customerId, String planName);
+    Subscription createSubscription(Customer customer, String planName);
     void saveSubscription(Subscription subscription);
     void deleteSubscriptionById(int subscriptionId);
 

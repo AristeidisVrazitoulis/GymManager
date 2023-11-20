@@ -1,7 +1,8 @@
 package com.aris.gymmanager.restcontroller;
 
 
-import com.aris.gymmanager.model.Plan;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.service.IPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,9 @@ public class PlanController {
 
     @GetMapping("/plans")
     public List<Plan> findAll(){
+
         return planService.findAll();
+        //return planService.findCustomersWithPlan();
     }
 
     @GetMapping("/plans/{planId}")

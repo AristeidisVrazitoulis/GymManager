@@ -1,7 +1,7 @@
-package com.aris.gymmanager.controller;
+package com.aris.gymmanager.mvccontroller;
 
 
-import com.aris.gymmanager.model.Plan;
+import com.aris.gymmanager.entity.Plan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.MediaType;
@@ -36,6 +36,21 @@ public class PlanViewController {
 
         return "plan/all";
     }
+
+    @GetMapping("/plan-subscription")
+    public String getPlanSubscriptions(@RequestParam int customerId, @RequestParam String planName, Model model) throws IOException {
+
+        Response response = getAllPlansCall();
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<Plan>>() {}.getType();
+
+        List<Plan> plans = gson.fromJson(response.body().string(), listType);
+        model.addAttribute("plans", plans);
+
+        return "customer/subscriptions";
+    }
+
+
 
     // Calls REST API to get all plans in JSON form
     private Response getAllPlansCall(){

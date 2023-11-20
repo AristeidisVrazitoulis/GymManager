@@ -1,4 +1,4 @@
-package com.aris.gymmanager.model;
+package com.aris.gymmanager.entity;
 
 import jakarta.persistence.*;
 

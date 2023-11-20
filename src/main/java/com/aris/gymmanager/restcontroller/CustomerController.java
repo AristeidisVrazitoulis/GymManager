@@ -1,8 +1,9 @@
 package com.aris.gymmanager.restcontroller;
 
 
-import com.aris.gymmanager.model.Customer;
-import com.aris.gymmanager.model.Subscription;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.service.ICustomerService;
 import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,14 @@ public class CustomerController {
 
     @GetMapping("/customers")
     public List<Customer> findAll(){
+
         return customerService.findAll();
+    }
+
+    @GetMapping("/customers-plan")
+    public List<CustomerDTO> findAllWithPlan(){
+        List<Customer> customers = customerService.findAll();
+        return customerService.convertToDTO(customers);
     }
 
     @GetMapping("/customers/{customerId}")
@@ -50,8 +58,7 @@ public class CustomerController {
 
     @PostMapping("/customers")
     public Customer createCustomer(@RequestBody Customer customer){
-        // Just in case someone passes an id set it to zero
-        // customer.setId(0);
+        // Update or create if customer id already exists
         customerService.save(customer);
         return customer;
     }
@@ -66,13 +73,14 @@ public class CustomerController {
         return "Customer with id:"+customerId+" removed";
     }
 
-    @PostMapping("/customers/subscribes/{customerId}")
-    public Subscription subscribeCustomer(@PathVariable int customerId, @RequestParam String planName){
+    // TODO: Make it PostMapping
+    @GetMapping("/customers/subscribes")
+    public Subscription subscribeCustomer(@RequestParam("customerId") int customerId, @RequestParam("planName") String planName){
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
             throw new RuntimeException("Customer id:"+customerId+" not Found");
         }
-        Subscription theSubscription = subscriptionService.createSubscription(customerId, planName);
+        Subscription theSubscription = subscriptionService.createSubscription(customer, planName);
         subscriptionService.saveSubscription(theSubscription);
         return theSubscription;
     }

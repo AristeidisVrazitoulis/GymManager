@@ -1,7 +1,7 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.model.Customer;
-import com.aris.gymmanager.model.Plan;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.repository.IPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +41,8 @@ public class PlanService implements IPlanService {
     public List<Plan> findAll(){
         return planRepository.findAll();
     }
+
+
 
     @Override
     public void deletePlanById(int id) {

@@ -1,6 +1,6 @@
 package com.aris.gymmanager.dao;
 
-import com.aris.gymmanager.model.Customer;
+import com.aris.gymmanager.entity.Customer;
 
 import java.util.List;
 

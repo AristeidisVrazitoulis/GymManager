@@ -1,34 +1,46 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.model.Customer;
-import com.aris.gymmanager.model.Plan;
-import com.aris.gymmanager.model.Subscription;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.repository.ICustomerRepository;
-import com.aris.gymmanager.repository.IPlanRepository;
-import com.aris.gymmanager.repository.ISubscriptionRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService implements ICustomerService {
 
     private ICustomerRepository customerRepository;
 
+    // TODO : Delete that?
+    // private ModelMapper modelMapper;
+
 
     @Autowired
-    public CustomerService(ICustomerRepository customerRepository){
+    public CustomerService(ICustomerRepository customerRepository, ModelMapper modelMapper){
         this.customerRepository = customerRepository;
     }
 
     @Override
-    public void save(Customer theCustomer) {
-        System.out.println("After: "+theCustomer.getId());
-        customerRepository.save(theCustomer);
+    public List<CustomerDTO> convertToDTO(List<Customer> customers){
+        List<CustomerDTO> customerDTOS = new ArrayList<>();
+        for(Customer customer : customers){
+            customerDTOS.add(new CustomerDTO(
+                    customer.getId(),
+                    customer.getFirstName(),
+                    customer.getLastName(),
+                    customer.getPlan().getTitle())
+            );
+        }
+        return customerDTOS;
     }
+
+
 
     @Override
     public Customer findCustomerById(int id) {
@@ -44,12 +56,20 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public List<Customer> findAll(){
-        return customerRepository.findAll();
+
+        List<Customer> customers = customerRepository.findAll();
+        return customers;
     }
+
 
     @Override
     public List<Customer> findCustomerByLastName(String lastName) {
         return customerRepository.findCustomerByLastName(lastName);
+    }
+
+    @Override
+    public void save(Customer theCustomer) {
+        customerRepository.save(theCustomer);
     }
 
 
@@ -57,6 +77,8 @@ public class CustomerService implements ICustomerService {
     public void deleteCustomerById(int id) {
         customerRepository.deleteById(id);
     }
+
+
 
 
 }

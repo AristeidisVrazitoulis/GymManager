@@ -1,7 +1,7 @@
 package com.aris.gymmanager.dao;
 
 
-import com.aris.gymmanager.model.Plan;
+import com.aris.gymmanager.entity.Plan;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

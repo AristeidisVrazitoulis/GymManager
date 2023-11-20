@@ -1,7 +1,7 @@
 package com.aris.gymmanager;
 
 import com.aris.gymmanager.dao.ICustomerDAO;
-import com.aris.gymmanager.model.Customer;
+import com.aris.gymmanager.service.ICustomerService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,11 +19,12 @@ public class GymManagerApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner(ICustomerDAO customerDAO){
+	public CommandLineRunner commandLineRunner(ICustomerService customerService){
 		return runner -> {
 			// createCustomer(customerDAO);
 			// readCustomer(customerDAO);
 			// queryForLastName(customerDAO);
+			// List<Object> result = customerService.getCustomersWIthPlan();
 		};
 	}
 

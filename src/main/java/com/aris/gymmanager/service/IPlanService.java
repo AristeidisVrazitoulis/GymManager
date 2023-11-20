@@ -1,7 +1,7 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.model.Customer;
-import com.aris.gymmanager.model.Plan;
+import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Plan;
 
 import java.util.List;
 
@@ -14,4 +14,5 @@ public interface IPlanService {
     List<Plan> findAll();
 
     void deletePlanById(int id);
+
 }

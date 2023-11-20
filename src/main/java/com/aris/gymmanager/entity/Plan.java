@@ -1,7 +1,11 @@
-package com.aris.gymmanager.model;
+package com.aris.gymmanager.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="plan")
@@ -23,6 +27,13 @@ public class Plan {
 
     @Column(name = "price")
     private float price;
+
+    // TODO: Take care of cascading
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "plan",
+            cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+
+    @JsonManagedReference
+    private List<Customer> customers;
 
     public Plan(){
 
@@ -73,6 +84,22 @@ public class Plan {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
+
+    public void add(Customer tempCustomer){
+        if(customers == null){
+            customers = new ArrayList<>();
+        }
+        customers.add(tempCustomer);
+        tempCustomer.setPlan(this);
     }
 
     @Override

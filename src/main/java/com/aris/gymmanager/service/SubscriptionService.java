@@ -1,9 +1,8 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.model.Customer;
-import com.aris.gymmanager.model.Plan;
-import com.aris.gymmanager.model.Subscription;
-import com.aris.gymmanager.repository.ICustomerRepository;
+import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.repository.IPlanRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +38,26 @@ public class SubscriptionService implements ISubscriptionService{
     }
 
     @Override
-    public Subscription createSubscription(int customerId, String title){
+    public Subscription createSubscription(Customer customer, String title){
         List<Plan> plans = planRepository.findPlanByTitle(title);
         if(plans == null){
             throw new RuntimeException("Plan '"+title+"' not found");
         }
+
+        if(plans.size() > 1 ){
+            System.out.println("There are more than one plans with the title: "+title);
+        }
         Plan thePlan = plans.get(0);
+
+        //  add the one-to-many relationship
+        thePlan.add(customer);
 
         int planId = thePlan.getId();
         // startDate is always today
         Date startDate = new Date();
         Date endDate = getEndDate(startDate, thePlan.getDuration());
 
-        return new Subscription(customerId, planId, startDate, endDate);
+        return new Subscription(customer.getId(), planId, startDate, endDate);
     }
 
     // returns the date after adding days to the starting date of the plan
