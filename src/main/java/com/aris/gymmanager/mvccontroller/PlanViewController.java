@@ -1,7 +1,11 @@
 package com.aris.gymmanager.mvccontroller;
 
 
+import com.aris.gymmanager.dto.SubscriptionDTO;
+import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.entity.Subscription;
+import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.MediaType;
@@ -9,6 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +26,17 @@ import java.util.Locale;
 @Controller
 public class PlanViewController {
 
+    private RestCaller restCaller;
 
+    @Autowired
+    public PlanViewController(RestCaller restCaller){
+        this.restCaller = restCaller;
+    }
 
     @GetMapping("/plan-list")
     public String getPlans(Model model) throws IOException {
 
-        Response response = getAllPlansCall();
+        Response response = restCaller.getAllPlansCall();
         Gson gson = new Gson();
         Type listType = new TypeToken<List<Plan>>() {}.getType();
 
@@ -40,36 +50,27 @@ public class PlanViewController {
     @GetMapping("/plan-subscription")
     public String getPlanSubscriptions(@RequestParam int customerId, @RequestParam String planName, Model model) throws IOException {
 
-        Response response = getAllPlansCall();
         Gson gson = new Gson();
-        Type listType = new TypeToken<List<Plan>>() {}.getType();
+        // Get all Customer's Subscriptions
+        Response subscriptionResponse = restCaller.getSubscriptionByCustomerCall(customerId);
+        Type listType = new TypeToken<List<SubscriptionDTO>>() {}.getType();
+        List<SubscriptionDTO> subscriptions = gson.fromJson(subscriptionResponse.body().string(), listType);
 
-        List<Plan> plans = gson.fromJson(response.body().string(), listType);
-        model.addAttribute("plans", plans);
+        // Get Customer data
+        Response responseCustomer = restCaller.getCustomerByIdCall(customerId);
+        Customer customer = gson.fromJson(responseCustomer.body().string(), Customer.class);
+
+        // Get Customer object by calling the RESTful API
+        model.addAttribute("customer", customer);
+        // Create a Query from Subscription with the customer's subscriptions
+        model.addAttribute("subscriptions", subscriptions);
+        model.addAttribute("planName", planName);
+        // model.addAttribute("plans", plans);
 
         return "customer/subscriptions";
     }
 
 
-
-    // Calls REST API to get all plans in JSON form
-    private Response getAllPlansCall(){
-        Response response = null;
-        try {
-            OkHttpClient client = new OkHttpClient().newBuilder()
-                    .build();
-            MediaType mediaType = MediaType.parse("text/plain");
-            Request request = new Request.Builder()
-                    .url("http://localhost:8080/api/plans")
-                    .build();
-
-            response = client.newCall(request).execute();
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return response;
-    }
 
     @GetMapping("/plan-form")
     public String createPlanForm(Model theModel){
@@ -78,37 +79,22 @@ public class PlanViewController {
         return "plan/create-form";
     }
 
+
+
+
     @PostMapping("/plan-save")
     public String savePlan(@ModelAttribute("plan") Plan plan) throws IOException{
-        System.out.println(plan);
-        createPlanCall(plan);
+        // System.out.println(plan);
+        restCaller.createPlanCall(plan);
         return "redirect:/plan-list";
 
     }
 
-    private void createPlanCall(Plan plan) throws IOException {
-        String content = String.format(Locale.US, "{\r\n    \"title\" : \"%s\",\r\n    \"duration\" : %d,\r\n    \"description\" : \"%s\",\r\n    \"price\" : %.2f\r\n}",
-                plan.getTitle(),
-                plan.getDuration(),
-                plan.getDescription(),
-                plan.getPrice());
-        System.out.println(content);
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("application/json");
 
-        RequestBody body = RequestBody.create(mediaType, content);
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans")
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
-    }
 
     @GetMapping("/plan-edit")
     public String editPlan(@RequestParam("planId") int planId, Model theModel) throws IOException{
-        Response response = getPlanByIdCall(planId);
+        Response response = restCaller.getPlanByIdCall(planId);
 
         Gson gson = new Gson();
 
@@ -118,37 +104,17 @@ public class PlanViewController {
         return "plan/edit";
     }
 
-    private Response getPlanByIdCall(int id) throws IOException{
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
 
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans/"+id)
-                .build();
-        return client.newCall(request).execute();
-
-    }
 
 
     @GetMapping("/plan-delete")
     public String deletePlan(@RequestParam("planId") int planId) throws IOException{
-        deletePlanCall(planId);
+        restCaller.deletePlanCall(planId);
         // theModel.addAttribute("Message", "Deleted Successfully");
         return "redirect:/plan-list";
     }
 
-    private void deletePlanCall(int planId) throws IOException{
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans/"+planId)
-                .method("DELETE", body)
-                .build();
-        Response response = client.newCall(request).execute();
-    }
+
 
 
 

@@ -4,12 +4,14 @@ package com.aris.gymmanager.mvccontroller;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +25,10 @@ import java.lang.reflect.Type;
 public class CustomerViewController {
 
 
-
-    public CustomerViewController(){
-
+    private RestCaller restCaller;
+    @Autowired
+    public CustomerViewController(RestCaller restCaller){
+        this.restCaller = restCaller;
     }
 
     @GetMapping("/")
@@ -35,60 +38,31 @@ public class CustomerViewController {
 
     @GetMapping("/customer-info/{customerId}")
     public String getCustomerInfo(@PathVariable int customerId, Model theModel) throws IOException{
-        Response response = getCustomerByIdCall(customerId);
+        Response response = restCaller.getCustomerByIdCall(customerId);
         Gson gson = new Gson();
         Customer customer = gson.fromJson(response.body().string(), Customer.class);
         theModel.addAttribute("customer", customer);
         return "customer/info";
     }
 
-    private Response getCustomerByIdCall(int id) throws IOException{
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
 
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/customers/"+id)
-                .build();
-        return client.newCall(request).execute();
-
-    }
-
+    // TODO: Improve table elements positioning
+    // TODO: Show active users
     @GetMapping("/customer-list")
     public String getCustomers(Model model) throws IOException {
 
-        Response response = getAllCustomersCall();
+        Response response = restCaller.getAllCustomersCall();
         Gson gson = new Gson();
         Type listType = new TypeToken<List<CustomerDTO>>() {}.getType();
 
+        // String s = response.body().string();
         List<CustomerDTO> customers = gson.fromJson(response.body().string(), listType);
-
-
-
         model.addAttribute("customers", customers);
         model.addAttribute("total", customers.size());
 
         return "customer/all";
     }
 
-    // Calls REST API to get all customers in JSON form
-    private Response getAllCustomersCall(){
-        Response response = null;
-        try {
-            OkHttpClient client = new OkHttpClient().newBuilder()
-                    .build();
-            MediaType mediaType = MediaType.parse("text/plain");
-            Request request = new Request.Builder()
-                    .url("http://localhost:8080/api/customers-plan")
-                    .build();
-
-            response = client.newCall(request).execute();
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return response;
-    }
 
     @GetMapping("/customer-form")
     public String createCustomerForm(Model theModel){
@@ -100,35 +74,14 @@ public class CustomerViewController {
     @PostMapping("/customer-save")
     public String saveCustomer(@ModelAttribute("customer") Customer customer) throws IOException{
 
-        createCustomerCall(customer);
+        restCaller.createCustomerCall(customer);
         return "redirect:/customer-list";
 
     }
 
-    private void createCustomerCall(Customer customer) throws IOException {
-        String content;
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("application/json");
-
-        // Update or Create
-        if(customer.getId() != 0) {
-            content = "{\r\n  \"id\" : \""+customer.getId()+"\",\r\n  \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
-        } else {
-            content = "{\r\n    \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
-        }
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, content);
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/customers")
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
-    }
-
     @GetMapping("/customer-edit")
     public String editCustomer(@RequestParam("customerId") int customerId, Model theModel) throws IOException{
-        Response response = getCustomerByIdCall(customerId);
+        Response response = restCaller.getCustomerByIdCall(customerId);
 
         Gson gson = new Gson();
 
@@ -141,42 +94,23 @@ public class CustomerViewController {
 
     @GetMapping("/customer-delete")
     public String deleteCustomer(@RequestParam("customerId") int customerId) throws IOException{
-        deleteCustomerCall(customerId);
+        restCaller.deleteCustomerCall(customerId);
         // theModel.addAttribute("Message", "Deleted Successfully");
         return "redirect:/customer-list";
     }
 
-    private void deleteCustomerCall(int customerId) throws IOException{
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/customers/"+customerId)
-                .method("DELETE", body)
-                .build();
-        Response response = client.newCall(request).execute();
-    }
 
     @PostMapping("/subscribe/{customerId}")
     public String subscribeCustomer(@PathVariable int customerId, @RequestParam String planName, Model theModel) throws IOException{
 
-        makeSubscriptionCall(customerId, planName);
+        restCaller.saveSubscriptionCall(customerId, planName);
         theModel.addAttribute("message", "subscription updated successfully");
 
         return "redirect:/customer/info";
     }
 
-    private void makeSubscriptionCall(int id, String planName) throws IOException{
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/customers/subscribes/"+id+"?planName="+planName)
-                .method("POST", body)
-                .build();
-        Response response = client.newCall(request).execute();
-    }
+
+
+
 
 }

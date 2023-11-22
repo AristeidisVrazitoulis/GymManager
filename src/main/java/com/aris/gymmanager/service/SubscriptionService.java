@@ -1,5 +1,6 @@
 package com.aris.gymmanager.service;
 
+import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.entity.Subscription;
@@ -8,10 +9,8 @@ import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class SubscriptionService implements ISubscriptionService{
@@ -19,10 +18,16 @@ public class SubscriptionService implements ISubscriptionService{
     private IPlanRepository planRepository;
     private ISubscriptionRepository subscriptionRepository;
 
+    private IPlanService planService;
+
     @Autowired
-    public SubscriptionService(IPlanRepository planRepository, ISubscriptionRepository subscriptionRepository){
+    public SubscriptionService(IPlanRepository planRepository,
+                               ISubscriptionRepository subscriptionRepository,
+                               IPlanService planService)
+    {
         this.planRepository = planRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.planService = planService;
     }
 
     @Override
@@ -38,7 +43,7 @@ public class SubscriptionService implements ISubscriptionService{
     }
 
     @Override
-    public Subscription createSubscription(Customer customer, String title){
+    public Subscription createSubscription(Customer customer, String title, Date startDate){
         List<Plan> plans = planRepository.findPlanByTitle(title);
         if(plans == null){
             throw new RuntimeException("Plan '"+title+"' not found");
@@ -52,12 +57,10 @@ public class SubscriptionService implements ISubscriptionService{
         //  add the one-to-many relationship
         thePlan.add(customer);
 
-        int planId = thePlan.getId();
-        // startDate is always today
-        Date startDate = new Date();
+        // endDate = startDate + numOfDays
         Date endDate = getEndDate(startDate, thePlan.getDuration());
 
-        return new Subscription(customer.getId(), planId, startDate, endDate);
+        return new Subscription(customer.getId(), thePlan.getId(), startDate, endDate);
     }
 
     // returns the date after adding days to the starting date of the plan
@@ -77,4 +80,26 @@ public class SubscriptionService implements ISubscriptionService{
     public void deleteSubscriptionById(int subscriptionId){
         subscriptionRepository.deleteById(subscriptionId);
     }
+
+    @Override
+    public List<SubscriptionDTO> findSubscriptionsByCustomerId(int customerId){
+        List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsByCustomerId(customerId);
+        List<SubscriptionDTO> subscriptionDTOS = new ArrayList<>();
+        Plan thePlan = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        for(Subscription sub : subscriptions){
+            thePlan = planService.findPlanById(sub.getPlanId());
+
+            subscriptionDTOS.add(new SubscriptionDTO(
+                    sub.getId(),
+                    thePlan.getTitle(),
+                    dateFormat.format(sub.getStartDate()),
+                    dateFormat.format(sub.getEndDate()))
+            );
+        }
+        return subscriptionDTOS;
+    }
+
+
+
 }

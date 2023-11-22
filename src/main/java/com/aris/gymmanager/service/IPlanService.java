@@ -13,6 +13,8 @@ public interface IPlanService {
 
     List<Plan> findAll();
 
+    Plan getPlanByName(String planName);
+
     void deletePlanById(int id);
 
 }

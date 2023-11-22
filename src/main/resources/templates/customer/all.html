@@ -15,13 +15,15 @@
     <h3>Customers Directory</h3>
     <hr>
     <a th:href="@{/customer-form}" class="btn btn-primary btn-sm mb-4">Add Customer</a>
+    <a class="float-end" style="font-size:14px" th:href="@{/plan-list}">View Plan Directory</a>
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Plan</th>
-            <th class="col-2">Action</th>
+            <th>Is Active</th>
+            <th>Action</th>
         </tr>
         </thead>
 
@@ -30,6 +32,7 @@
             <td th:text="${tempCustomer.firstName}" />
             <td th:text="${tempCustomer.lastName}" />
             <td th:text="${tempCustomer.planTitle}" />
+            <td th:text="${tempCustomer.active}" />
             <td><a th:href="@{/customer-edit(customerId=${tempCustomer.customerId})}"
                    class="btn btn-secondary btn-sm">Edit Info</a>
                 <a th:href="@{/plan-subscription(customerId=${tempCustomer.customerId}, planName=${tempCustomer.planTitle})}"

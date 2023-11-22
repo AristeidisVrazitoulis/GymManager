@@ -24,6 +24,11 @@ public class Subscription {
     @Column(name="end_date")
     private Date endDate;
 
+
+    public Subscription(){
+
+    }
+
     public Subscription(int customerId, int planId, Date startDate, Date endDate) {
         this.customerId = customerId;
         this.planId = planId;

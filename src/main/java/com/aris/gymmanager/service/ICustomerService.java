@@ -19,5 +19,8 @@ public interface ICustomerService {
 
     void deleteCustomerById(int id);
 
+    void updateCustomersActivationState();
+
+
     // List<Object> getCustomersWIthPlan();
 }

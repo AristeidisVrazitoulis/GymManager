@@ -1,6 +1,5 @@
 package com.aris.gymmanager.service;
 
-import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.repository.IPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,15 @@ public class PlanService implements IPlanService {
     @Override
     public List<Plan> findAll(){
         return planRepository.findAll();
+    }
+
+    @Override
+    public Plan getPlanByName(String planName){
+        List<Plan> thePlan = planRepository.findPlanByTitle(planName);
+        if(thePlan == null){
+            throw new RuntimeException("no plans found with title: "+planName );
+        }
+        return thePlan.get(0);
     }
 
 

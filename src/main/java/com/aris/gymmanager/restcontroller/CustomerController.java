@@ -3,12 +3,15 @@ package com.aris.gymmanager.restcontroller;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.service.ICustomerService;
+import com.aris.gymmanager.service.IPlanService;
 import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -16,12 +19,12 @@ import java.util.List;
 public class CustomerController {
 
     private ICustomerService customerService;
-    private ISubscriptionService subscriptionService;
+    private IPlanService planService;
 
     @Autowired
-    public CustomerController(ICustomerService customerService, ISubscriptionService subscriptionService){
+    public CustomerController(ICustomerService customerService, IPlanService planService){
         this.customerService = customerService;
-        this.subscriptionService = subscriptionService;
+        this.planService = planService;
     }
 
 
@@ -33,8 +36,10 @@ public class CustomerController {
 
     @GetMapping("/customers-plan")
     public List<CustomerDTO> findAllWithPlan(){
+        customerService.updateCustomersActivationState();
         List<Customer> customers = customerService.findAll();
-        return customerService.convertToDTO(customers);
+        List<CustomerDTO> custs = customerService.convertToDTO(customers);
+        return custs;
     }
 
     @GetMapping("/customers/{customerId}")
@@ -59,6 +64,14 @@ public class CustomerController {
     @PostMapping("/customers")
     public Customer createCustomer(@RequestBody Customer customer){
         // Update or create if customer id already exists
+        if (customer.getPlan() == null){
+            Plan plan = null;
+            plan = planService.getPlanByName("NoPlan");
+            if(plan == null) {
+                throw new RuntimeException("No plan not found");
+            }
+            customer.setPlan(plan);
+        }
         customerService.save(customer);
         return customer;
     }
@@ -73,28 +86,5 @@ public class CustomerController {
         return "Customer with id:"+customerId+" removed";
     }
 
-    // TODO: Make it PostMapping
-    @GetMapping("/customers/subscribes")
-    public Subscription subscribeCustomer(@RequestParam("customerId") int customerId, @RequestParam("planName") String planName){
-        Customer customer = customerService.findCustomerById(customerId);
-        if(customer == null){
-            throw new RuntimeException("Customer id:"+customerId+" not Found");
-        }
-        Subscription theSubscription = subscriptionService.createSubscription(customer, planName);
-        subscriptionService.saveSubscription(theSubscription);
-        return theSubscription;
-    }
-
-    // customer that unsubscribes
-    @DeleteMapping("/customers/subscribes/{subscriptionId}")
-    public Subscription unsubscribeCustomer(@PathVariable int subscriptionId){
-
-        Subscription theSubscription = subscriptionService.findSubscriptionById(subscriptionId);
-        if(theSubscription == null){
-            throw new RuntimeException("Subscription id:"+subscriptionId+" not Found");
-        }
-        subscriptionService.deleteSubscriptionById(subscriptionId);
-        return theSubscription;
-    }
 
 }

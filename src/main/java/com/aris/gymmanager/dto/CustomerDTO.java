@@ -8,17 +8,18 @@ public class CustomerDTO {
     private String firstName;
     private String lastName;
     private String planTitle;
-
+    private boolean active;
 
     public CustomerDTO(){
 
     }
 
-    public CustomerDTO(int customerId, String firstName, String lastName, String planTitle) {
+    public CustomerDTO(int customerId, String firstName, String lastName, String planTitle, boolean active) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.planTitle = planTitle;
+        this.active = active;
     }
 
     public int getCustomerId() {
@@ -53,6 +54,14 @@ public class CustomerDTO {
         this.planTitle = planTitle;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        active = active;
+    }
+
     @Override
     public String toString() {
         return "CustomerDTO{" +
@@ -60,6 +69,7 @@ public class CustomerDTO {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", planTitle='" + planTitle + '\'' +
+                ", active=" + active +
                 '}';
     }
 }

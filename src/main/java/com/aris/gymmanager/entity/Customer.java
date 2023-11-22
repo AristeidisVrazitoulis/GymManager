@@ -20,6 +20,9 @@ public class Customer {
     @Column(name="last_name")
     private String lastName;
 
+    @Column(name="is_active")
+    private boolean active;
+
     @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name="plan_id")
     @JsonBackReference
@@ -28,10 +31,13 @@ public class Customer {
     public Customer(){
 
     }
+
     public Customer(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+
+
 
     public int getId() {
         return id;
@@ -65,12 +71,20 @@ public class Customer {
         this.plan = plan;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", active=" + active +
                 ", plan=" + plan +
                 '}';
     }

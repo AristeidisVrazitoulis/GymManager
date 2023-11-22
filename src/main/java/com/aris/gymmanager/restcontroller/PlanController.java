@@ -2,8 +2,11 @@ package com.aris.gymmanager.restcontroller;
 
 
 import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.service.IPlanService;
+import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +17,11 @@ import java.util.List;
 public class PlanController {
 
     private IPlanService planService;
-
+    private ISubscriptionService subscriptionService;
     @Autowired
-    public PlanController(IPlanService planService){
+    public PlanController(IPlanService planService, ISubscriptionService subscriptionService){
         this.planService = planService;
+        this.subscriptionService = subscriptionService;
     }
 
 
@@ -38,14 +42,21 @@ public class PlanController {
         return customer;
     }
 
+    @GetMapping("/plans-customer/{customerId}")
+    public List<SubscriptionDTO> getSubscriptionByCustomer(@PathVariable int customerId){
+        List<SubscriptionDTO> subs = subscriptionService.findSubscriptionsByCustomerId(customerId);
+        return subs;
+    }
+
+
     @PostMapping("/plans")
     public Plan createPlan(@RequestBody Plan plan){
-        // Just in case someone passes an id set it to zero
-
         planService.save(plan);
-
         return plan;
     }
+
+    // TODO: edit plan
+
 
 
     @DeleteMapping("/plans/{planId}")
