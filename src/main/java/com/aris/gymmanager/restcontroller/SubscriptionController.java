@@ -1,7 +1,9 @@
 package com.aris.gymmanager.restcontroller;
 
+import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Subscription;
+import com.aris.gymmanager.exception.CustomerNotFoundException;
 import com.aris.gymmanager.service.ICustomerService;
 import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -24,12 +27,19 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
+
+    @GetMapping("/plans-customer/{customerId}")
+    public List<SubscriptionDTO> getSubscriptionByCustomer(@PathVariable int customerId){
+        List<Subscription> subs = subscriptionService.findSubscriptionsByCustomerId(customerId);
+        return subscriptionService.convertToDTO(subs);
+    }
+
     @PostMapping("/subscribes")
     public Subscription subscribeCustomer(@RequestBody HashMap<String, String> payload){
         String planName = payload.get("planName");
         Integer customerId = Integer.parseInt(payload.get("customerId"));
         String startDateText = payload.get("startDate");
-        System.out.println(startDateText);
+
         Date startDate = null;
         try {
             startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateText);
@@ -40,7 +50,7 @@ public class SubscriptionController {
 
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
-            throw new RuntimeException("Customer id:"+customerId+" not Found");
+            throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
         }
         Subscription theSubscription = subscriptionService.createSubscription(customer, planName, startDate);
         subscriptionService.saveSubscription(theSubscription);

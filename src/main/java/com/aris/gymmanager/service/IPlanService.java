@@ -15,6 +15,8 @@ public interface IPlanService {
 
     Plan getPlanByName(String planName);
 
+    Plan getPlanByCustomerId(int customerId);
+
     void deletePlanById(int id);
 
 }

@@ -3,11 +3,11 @@ package com.aris.gymmanager.utils;
 
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.util.Locale;
 
 @Component
 public class RestCaller {
@@ -19,7 +19,6 @@ public class RestCaller {
     public Response getCustomerByIdCall(int id) throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-        MediaType mediaType = MediaType.parse("text/plain");
 
         Request request = new Request.Builder()
                 .url("http://localhost:8080/api/customers/"+id)
@@ -35,7 +34,6 @@ public class RestCaller {
         try {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .build();
-            MediaType mediaType = MediaType.parse("text/plain");
             Request request = new Request.Builder()
                     .url("http://localhost:8080/api/customers-plan")
                     .build();
@@ -66,9 +64,13 @@ public class RestCaller {
                 .build();
         MediaType mediaType = MediaType.parse("application/json");
 
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customer);
+
         // Update or Create
+        // If customer exists then update
         if(customer.getId() != 0) {
-            content = "{\r\n  \"id\" : \""+customer.getId()+"\",\r\n  \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
+            content = json;
         } else {
             content = "{\r\n    \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
         }
@@ -153,12 +155,9 @@ public class RestCaller {
     }
 
     public void createPlanCall(Plan plan) throws IOException {
-        String content = String.format(Locale.US, "{\r\n    \"title\" : \"%s\",\r\n    \"duration\" : %d,\r\n    \"description\" : \"%s\",\r\n    \"price\" : %.2f\r\n}",
-                plan.getTitle(),
-                plan.getDuration(),
-                plan.getDescription(),
-                plan.getPrice());
-        System.out.println(content);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(plan);
+
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("application/json");

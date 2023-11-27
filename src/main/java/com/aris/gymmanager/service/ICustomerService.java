@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ICustomerService {
 
-    void save(Customer theCustomer);
+    Customer save(Customer theCustomer);
 
     List<CustomerDTO> convertToDTO(List<Customer> customers);
 

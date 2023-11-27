@@ -12,10 +12,11 @@ public class Subscription {
     @Column(name="subscription_id")
     private int id;
 
-
+//    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private int customerId;
 
+//    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id")
     private int planId;
 

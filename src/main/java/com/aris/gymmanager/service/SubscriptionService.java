@@ -4,6 +4,7 @@ import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.entity.Subscription;
+import com.aris.gymmanager.exception.PlanNotFoundException;
 import com.aris.gymmanager.repository.IPlanRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class SubscriptionService implements ISubscriptionService{
     public Subscription createSubscription(Customer customer, String title, Date startDate){
         List<Plan> plans = planRepository.findPlanByTitle(title);
         if(plans == null){
-            throw new RuntimeException("Plan '"+title+"' not found");
+            throw new PlanNotFoundException("Plan '"+title+"' not found");
         }
 
         if(plans.size() > 1 ){
@@ -82,8 +83,14 @@ public class SubscriptionService implements ISubscriptionService{
     }
 
     @Override
-    public List<SubscriptionDTO> findSubscriptionsByCustomerId(int customerId){
+    public List<Subscription> findSubscriptionsByCustomerId(int customerId){
         List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsByCustomerId(customerId);
+        return subscriptions;
+    }
+
+
+    @Override
+    public List<SubscriptionDTO> convertToDTO(List<Subscription> subscriptions){
         List<SubscriptionDTO> subscriptionDTOS = new ArrayList<>();
         Plan thePlan = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");

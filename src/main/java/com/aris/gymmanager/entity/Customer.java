@@ -1,43 +1,91 @@
 package com.aris.gymmanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
 @Entity
 @Table(name="customer")
+@Builder
 public class Customer {
 
-    // TODO: Add more fields
-    // TODO: Model Validation
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="customer_id")
     private int id;
 
     @Column(name="first_name")
+    @NotBlank(message = "Cannot be blank")
     private String firstName;
 
+    @NotBlank(message = "Cannot be blank")
     @Column(name="last_name")
     private String lastName;
 
     @Column(name="is_active")
     private boolean active;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @Column(name="email")
+    @Email
+    private String email;
+
+    @Column(name="phone")
+    @Pattern(regexp="(^$|[0-9]{10})")
+    private String phone;
+
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="plan_id")
-    @JsonBackReference
+    @JsonIgnoreProperties("customers")
     private Plan plan;
 
     public Customer(){
 
     }
 
-    public Customer(String firstName, String lastName) {
+    public Customer(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
     }
 
+    public Customer(int id, String firstName, String lastName, String email, String phone) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+    }
 
+    public Customer(int id, String firstName, String lastName, boolean active, String email, String phone, Plan plan) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.active = active;
+        this.email = email;
+        this.phone = phone;
+        this.plan = plan;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public int getId() {
         return id;
@@ -85,6 +133,8 @@ public class Customer {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", active=" + active +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
                 ", plan=" + plan +
                 '}';
     }

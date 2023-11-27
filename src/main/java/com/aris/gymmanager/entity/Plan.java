@@ -1,8 +1,10 @@
 package com.aris.gymmanager.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +30,8 @@ public class Plan {
     @Column(name = "price")
     private float price;
 
-    // TODO: Take care of cascading
-    @OneToMany(fetch=FetchType.LAZY, mappedBy = "plan",
-            cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-
-    @JsonManagedReference
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "plan", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("plan")
     private List<Customer> customers;
 
     public Plan(){

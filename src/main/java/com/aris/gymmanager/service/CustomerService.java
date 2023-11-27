@@ -5,12 +5,13 @@ import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.repository.ICustomerRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Date;
 
 @Service
 public class CustomerService implements ICustomerService {
@@ -18,8 +19,6 @@ public class CustomerService implements ICustomerService {
     private ICustomerRepository customerRepository;
     private ISubscriptionRepository subscriptionRepository;
 
-    // TODO : Delete that?
-    // private ModelMapper modelMapper;
 
 
     @Autowired
@@ -44,15 +43,12 @@ public class CustomerService implements ICustomerService {
     }
 
 
-
     @Override
     public Customer findCustomerById(int id) {
         Optional<Customer> result = customerRepository.findById(id);
         Customer theCustomer = null;
         if(result.isPresent()){
             theCustomer = result.get();
-        } else {
-          throw new RuntimeException("Customer not found - id :"+id);
         }
         return theCustomer;
     }
@@ -65,15 +61,14 @@ public class CustomerService implements ICustomerService {
     }
 
 
-
     @Override
     public List<Customer> findCustomerByLastName(String lastName) {
         return customerRepository.findCustomerByLastName(lastName);
     }
 
     @Override
-    public void save(Customer theCustomer) {
-        customerRepository.save(theCustomer);
+    public Customer save(Customer theCustomer) {
+        return customerRepository.save(theCustomer);
     }
 
 
@@ -93,8 +88,9 @@ public class CustomerService implements ICustomerService {
             startDate = sub.getStartDate();
             endDate = sub.getEndDate();
             customer = findCustomerById(sub.getCustomerId());
+
             // if today is greater than startDate AND today is less than endDate then customer is active
-            if(now.compareTo(startDate) >= 0 && now.compareTo(endDate) <= 0){
+            if(now.compareTo(startDate) >= 0 && now.compareTo(endDate) <= 0 && !customer.getPlan().getTitle().equals("NoPlan")){
                 customer.setActive(true);
                 // update database
                 save(customer);
@@ -106,8 +102,4 @@ public class CustomerService implements ICustomerService {
             }
         }
     }
-
-
-
-
 }

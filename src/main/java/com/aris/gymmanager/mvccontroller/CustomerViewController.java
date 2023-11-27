@@ -4,6 +4,7 @@ package com.aris.gymmanager.mvccontroller;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.exception.CustomerNotFoundException;
 import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,13 +42,14 @@ public class CustomerViewController {
         Response response = restCaller.getCustomerByIdCall(customerId);
         Gson gson = new Gson();
         Customer customer = gson.fromJson(response.body().string(), Customer.class);
+        if (customer == null){
+            throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
+        }
         theModel.addAttribute("customer", customer);
         return "customer/info";
     }
 
 
-    // TODO: Improve table elements positioning
-    // TODO: Show active users
     @GetMapping("/customer-list")
     public String getCustomers(Model model) throws IOException {
 
@@ -84,7 +86,6 @@ public class CustomerViewController {
         Response response = restCaller.getCustomerByIdCall(customerId);
 
         Gson gson = new Gson();
-
         Customer customer = gson.fromJson(response.body().string(), Customer.class);
         theModel.addAttribute(customer);
 

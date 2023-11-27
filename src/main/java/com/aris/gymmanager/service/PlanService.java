@@ -50,6 +50,10 @@ public class PlanService implements IPlanService {
         return thePlan.get(0);
     }
 
+    @Override
+    public Plan getPlanByCustomerId(int customerId){
+        return null;
+    }
 
 
     @Override

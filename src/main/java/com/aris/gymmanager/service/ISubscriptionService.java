@@ -14,6 +14,7 @@ public interface ISubscriptionService {
     void saveSubscription(Subscription subscription);
     void deleteSubscriptionById(int subscriptionId);
 
-    List<SubscriptionDTO> findSubscriptionsByCustomerId(int customerId);
+    List<Subscription> findSubscriptionsByCustomerId(int customerId);
 
+    List<SubscriptionDTO> convertToDTO(List<Subscription> subscriptions);
 }

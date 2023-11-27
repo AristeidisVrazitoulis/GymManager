@@ -1,10 +1,11 @@
 package com.aris.gymmanager.restcontroller;
 
 
-import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.dto.SubscriptionDTO;
+import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
-import com.aris.gymmanager.entity.Subscription;
+import com.aris.gymmanager.exception.CustomerNotFoundException;
+import com.aris.gymmanager.exception.PlanNotFoundException;
 import com.aris.gymmanager.service.IPlanService;
 import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,10 @@ import java.util.List;
 public class PlanController {
 
     private IPlanService planService;
-    private ISubscriptionService subscriptionService;
+
     @Autowired
-    public PlanController(IPlanService planService, ISubscriptionService subscriptionService){
+    public PlanController(IPlanService planService){
         this.planService = planService;
-        this.subscriptionService = subscriptionService;
     }
 
 
@@ -29,7 +29,6 @@ public class PlanController {
     public List<Plan> findAll(){
 
         return planService.findAll();
-        //return planService.findCustomersWithPlan();
     }
 
     @GetMapping("/plans/{planId}")
@@ -37,15 +36,9 @@ public class PlanController {
 
         Plan customer = planService.findPlanById(planId);
         if(customer == null){
-            throw new RuntimeException("Customer id:"+planId+" not Found");
+            throw new CustomerNotFoundException("Customer id:"+planId+" not Found");
         }
         return customer;
-    }
-
-    @GetMapping("/plans-customer/{customerId}")
-    public List<SubscriptionDTO> getSubscriptionByCustomer(@PathVariable int customerId){
-        List<SubscriptionDTO> subs = subscriptionService.findSubscriptionsByCustomerId(customerId);
-        return subs;
     }
 
 
@@ -58,12 +51,11 @@ public class PlanController {
     // TODO: edit plan
 
 
-
     @DeleteMapping("/plans/{planId}")
     public String deletePlanById(@PathVariable int planId){
         Plan plan = planService.findPlanById(planId);
         if(plan == null){
-            throw new RuntimeException("Plan id:"+planId+" not Found");
+            throw new PlanNotFoundException("Plan id:"+planId+" not Found");
         }
 
         planService.deletePlanById(planId);
