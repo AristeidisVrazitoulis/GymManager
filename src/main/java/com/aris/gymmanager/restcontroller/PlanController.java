@@ -48,7 +48,6 @@ public class PlanController {
         return plan;
     }
 
-    // TODO: edit plan
 
 
     @DeleteMapping("/plans/{planId}")

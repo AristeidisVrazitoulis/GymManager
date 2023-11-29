@@ -43,7 +43,7 @@ public class SubscriptionViewController {
         return "subscription/form";
     }
 
-
+    // TODO: make sure user puts a date
     @PostMapping(path = "/subscription-save",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {

@@ -58,7 +58,7 @@ public class RestCaller {
         Response response = client.newCall(request).execute();
     }
 
-    public void createCustomerCall(Customer customer) throws IOException {
+    public void saveCustomerCall(Customer customer, String method) throws IOException {
         String content;
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -67,17 +67,10 @@ public class RestCaller {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customer);
 
-        // Update or Create
-        // If customer exists then update
-        if(customer.getId() != 0) {
-            content = json;
-        } else {
-            content = "{\r\n    \"firstName\" : \"" + customer.getFirstName() + "\",\r\n    \"lastName\" : \"" + customer.getLastName() + "\"\r\n}";
-        }
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, content);
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, json);
         Request request = new Request.Builder()
                 .url("http://localhost:8080/api/customers")
-                .method("POST", body)
+                .method(method, body)
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = client.newCall(request).execute();
@@ -186,4 +179,22 @@ public class RestCaller {
         return response;
     }
 
+//    public void updateCustomerCall(Customer customer) throws Exception{
+//        String content;
+//        OkHttpClient client = new OkHttpClient().newBuilder()
+//                .build();
+//        MediaType mediaType = MediaType.parse("application/json");
+//
+//        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//        String json = ow.writeValueAsString(customer);
+//
+//        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, json);
+//        Request request = new Request.Builder()
+//                .url("http://localhost:8080/api/customers")
+//                .method("PUT", body)
+//                .addHeader("Content-Type", "application/json")
+//                .build();
+//        Response response = client.newCall(request).execute();
+//
+//    }
 }

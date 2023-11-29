@@ -11,6 +11,7 @@ import com.aris.gymmanager.service.ICustomerService;
 import com.aris.gymmanager.service.IPlanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,12 +24,13 @@ import java.util.List;
 public class CustomerController {
 
     private ICustomerService customerService;
-    private IPlanService planService;
 
+    public CustomerController(){
+
+    }
     @Autowired
-    public CustomerController(ICustomerService customerService, IPlanService planService){
+    public CustomerController(ICustomerService customerService){
         this.customerService = customerService;
-        this.planService = planService;
     }
 
 
@@ -54,43 +56,41 @@ public class CustomerController {
         return customer;
     }
 
-    @GetMapping("/customers/search")
-    public List<Customer> findCustomerByLastName(@RequestParam String lastName){
-        List<Customer> customer = customerService.findCustomerByLastName(lastName);
-        if(customer == null){
-            throw new CustomerNotFoundException("Customer last name:"+lastName+" not Found");
-        }
-        return customer;
-    }
+    // TODO: Delete that?
+//    @GetMapping("/customers/search")
+//    public List<Customer> findCustomerByLastName(@RequestParam String lastName){
+//        List<Customer> customer = customerService.findCustomerByLastName(lastName);
+//        if(customer == null){
+//            throw new CustomerNotFoundException("Customer last name:"+lastName+" not Found");
+//        }
+//        return customer;
+//    }
 
     @PostMapping("/customers")
+    @ResponseStatus(HttpStatus.CREATED)
     public Customer createCustomer(@Valid @RequestBody Customer customer, BindingResult bindingResult){
 
         if(bindingResult.hasErrors()){
             throw new InvalidModelException("Invalid Input");
         }
-        // Update or create if customer id already exists
-        // if customer is created then we set no plan
-        if (customer.getPlan() == null){
-            Plan plan = null;
-            plan = planService.getPlanByName("NoPlan");
-            if(plan == null) {
-                // throw new PlanNotFoundException("NoPlan not found");
-            }
-            customer.setPlan(plan);
-        }
-        customerService.save(customer);
-        return customer;
+
+        Customer retCust =  customerService.save(customer);
+        return retCust;
+    }
+
+    @PutMapping("/customers")
+    public Customer updateCustomer(@Valid @RequestBody Customer customer){
+
+        return customerService.updateCustomer(customer);
     }
 
     @DeleteMapping("/customers/{customerId}")
-    public String deleteCustomerById(@PathVariable int customerId){
+    public void deleteCustomerById(@PathVariable int customerId){
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
             throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
         }
         customerService.deleteCustomerById(customerId);
-        return "Customer with id:"+customerId+" removed";
     }
 
 

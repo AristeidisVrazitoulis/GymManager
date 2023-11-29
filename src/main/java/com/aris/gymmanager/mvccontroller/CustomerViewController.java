@@ -76,7 +76,15 @@ public class CustomerViewController {
     @PostMapping("/customer-save")
     public String saveCustomer(@ModelAttribute("customer") Customer customer) throws IOException{
 
-        restCaller.createCustomerCall(customer);
+        restCaller.saveCustomerCall(customer, "POST");
+        return "redirect:/customer-list";
+
+    }
+
+    @PostMapping("/customer-update")
+    public String updateCustomer(@ModelAttribute("customer") Customer customer) throws IOException{
+
+        restCaller.saveCustomerCall(customer, "PUT");
         return "redirect:/customer-list";
 
     }

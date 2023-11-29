@@ -2,6 +2,7 @@ package com.aris.gymmanager.service;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,12 +16,11 @@ public interface ICustomerService {
 
     List<Customer> findAll();
 
-    List<Customer> findCustomerByLastName(String lastName);
+//    List<Customer> findCustomerByLastName(String lastName);
 
     void deleteCustomerById(int id);
 
     void updateCustomersActivationState();
 
-
-    // List<Object> getCustomersWIthPlan();
+    Customer updateCustomer(Customer customer);
 }

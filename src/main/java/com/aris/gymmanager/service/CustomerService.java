@@ -3,6 +3,7 @@ package com.aris.gymmanager.service;
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Subscription;
+import com.aris.gymmanager.exception.CustomerNotFoundException;
 import com.aris.gymmanager.repository.ICustomerRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,16 @@ public class CustomerService implements ICustomerService {
     @Override
     public List<CustomerDTO> convertToDTO(List<Customer> customers){
         List<CustomerDTO> customerDTOS = new ArrayList<>();
+        String title;
         for(Customer customer : customers){
+
+            title = (customer.getPlan() == null ) ? "NoPlan" : customer.getPlan().getTitle();
+
             customerDTOS.add(new CustomerDTO(
                     customer.getId(),
                     customer.getFirstName(),
                     customer.getLastName(),
-                    customer.getPlan().getTitle(),
+                    title,
                     customer.isActive())
             );
         }
@@ -60,10 +65,25 @@ public class CustomerService implements ICustomerService {
         return customers;
     }
 
+// TODO: Delete that?
+//    @Override
+//    public List<Customer> findCustomerByLastName(String lastName) {
+//        return customerRepository.findCustomerByLastName(lastName);
+//    }
 
-    @Override
-    public List<Customer> findCustomerByLastName(String lastName) {
-        return customerRepository.findCustomerByLastName(lastName);
+    public Customer updateCustomer(Customer customer){
+
+        if(!customerRepository.existsById(customer.getId())){
+            throw new CustomerNotFoundException("Customer not found");
+        }
+        Customer retrievedCustomer = findCustomerById(customer.getId());
+        if(retrievedCustomer == null){
+            throw new CustomerNotFoundException("Customer not found");
+        }
+
+        retrievedCustomer = customer;
+
+        return save(retrievedCustomer);
     }
 
     @Override
