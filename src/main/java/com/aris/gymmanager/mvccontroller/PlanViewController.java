@@ -84,8 +84,14 @@ public class PlanViewController {
 
     @PostMapping("/plan-save")
     public String savePlan(@ModelAttribute("plan") Plan plan) throws IOException{
-        // System.out.println(plan);
-        restCaller.createPlanCall(plan);
+        restCaller.savePlanCall(plan, "POST");
+        return "redirect:/plan-list";
+
+    }
+
+    @PostMapping("/plan-update")
+    public String updatePlan(@ModelAttribute("plan") Plan plan) throws IOException{
+        restCaller.savePlanCall(plan, "PUT");
         return "redirect:/plan-list";
 
     }

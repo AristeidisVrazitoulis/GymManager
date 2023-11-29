@@ -147,7 +147,7 @@ public class RestCaller {
 
     }
 
-    public void createPlanCall(Plan plan) throws IOException {
+    public void savePlanCall(Plan plan, String method) throws IOException {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String content = ow.writeValueAsString(plan);
 
@@ -158,7 +158,7 @@ public class RestCaller {
         RequestBody body = RequestBody.create(mediaType, content);
         Request request = new Request.Builder()
                 .url("http://localhost:8080/api/plans")
-                .method("POST", body)
+                .method(method, body)
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = client.newCall(request).execute();

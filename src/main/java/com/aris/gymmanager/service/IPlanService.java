@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IPlanService {
 
-    void save(Plan plan);
+    Plan save(Plan plan);
 
     Plan findPlanById(int id);
 
@@ -16,6 +16,8 @@ public interface IPlanService {
     Plan getPlanByName(String planName);
 
     Plan getPlanByCustomerId(int customerId);
+
+    Plan updatePlan(Plan plan);
 
     void deletePlanById(int id);
 

@@ -73,8 +73,9 @@ public class SubscriptionService implements ISubscriptionService{
     }
 
     @Override
-    public void saveSubscription(Subscription subscription){
-        subscriptionRepository.save(subscription);
+    public Subscription saveSubscription(Subscription subscription){
+
+        return subscriptionRepository.save(subscription);
     }
 
     @Override
@@ -84,6 +85,7 @@ public class SubscriptionService implements ISubscriptionService{
 
     @Override
     public List<Subscription> findSubscriptionsByCustomerId(int customerId){
+        // Check if customer id exists
         List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsByCustomerId(customerId);
         return subscriptions;
     }

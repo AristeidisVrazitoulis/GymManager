@@ -1,11 +1,13 @@
 package com.aris.gymmanager.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.util.Date;
 
 @Entity
 @Table(name="subscribes")
+@Builder
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,14 @@ public class Subscription {
     }
 
     public Subscription(int customerId, int planId, Date startDate, Date endDate) {
+        this.customerId = customerId;
+        this.planId = planId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Subscription(int id, int customerId, int planId, Date startDate, Date endDate) {
+        this.id = id;
         this.customerId = customerId;
         this.planId = planId;
         this.startDate = startDate;

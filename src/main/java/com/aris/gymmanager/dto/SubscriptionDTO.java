@@ -54,4 +54,26 @@ public class SubscriptionDTO {
                 ", endDate=" + endDate +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SubscriptionDTO that = (SubscriptionDTO) o;
+
+        if (customerId != that.customerId) return false;
+        if (!planName.equals(that.planName)) return false;
+        if (!startDate.equals(that.startDate)) return false;
+        return endDate.equals(that.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = customerId;
+        result = 31 * result + planName.hashCode();
+        result = 31 * result + startDate.hashCode();
+        result = 31 * result + endDate.hashCode();
+        return result;
+    }
 }

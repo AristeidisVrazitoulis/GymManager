@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="plan")
+@Builder
 public class Plan {
 
     @Id
@@ -43,6 +46,16 @@ public class Plan {
         this.duration = duration;
         this.description = description;
         this.price = price;
+    }
+
+    // For testing mostly
+    public Plan(int id, String title, int duration, String description, float price, List<Customer> customers) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.description = description;
+        this.price = price;
+        this.customers = customers;
     }
 
     public int getId() {
@@ -110,5 +123,19 @@ public class Plan {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Plan plan = (Plan) o;
+        return id == plan.id && duration == plan.duration && Float.compare(plan.price, price) == 0 && title.equals(plan.title) && description.equals(plan.description) && Objects.equals(customers, plan.customers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, duration, description, price, customers);
     }
 }

@@ -17,7 +17,7 @@
     <h3>Plans Directory</h3>
     <hr>
     <p class="h4 mb-4">Edit Plan</p>
-    <form action="#" th:action="@{/plan-save}"
+    <form action="#" th:action="@{/plan-update}"
           th:object="${plan}" method="POST">
 
         <input type="hidden" th:field="*{id}">

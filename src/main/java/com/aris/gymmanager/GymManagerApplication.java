@@ -20,7 +20,7 @@ public class GymManagerApplication {
 
 	// for testing
 	@Bean
-	public CommandLineRunner commandLineRunner(ICustomerService customerService){
+	public CommandLineRunner commandLineRunner(){
 		return runner -> {
 
 		};

@@ -11,7 +11,7 @@ public interface ISubscriptionService {
 
     Subscription findSubscriptionById(int subscriptionId);
     Subscription createSubscription(Customer customer, String planName, Date startDate);
-    void saveSubscription(Subscription subscription);
+    Subscription saveSubscription(Subscription subscription);
     void deleteSubscriptionById(int subscriptionId);
 
     List<Subscription> findSubscriptionsByCustomerId(int customerId);

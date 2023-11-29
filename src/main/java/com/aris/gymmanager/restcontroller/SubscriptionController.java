@@ -6,6 +6,7 @@ import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.exception.CustomerNotFoundException;
 import com.aris.gymmanager.service.ICustomerService;
 import com.aris.gymmanager.service.ISubscriptionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -35,6 +36,7 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscribes")
+    @ResponseStatus(HttpStatus.CREATED)
     public Subscription subscribeCustomer(@RequestBody HashMap<String, String> payload){
         String planName = payload.get("planName");
         Integer customerId = Integer.parseInt(payload.get("customerId"));
@@ -44,7 +46,6 @@ public class SubscriptionController {
         try {
             startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateText);
         } catch(ParseException e){
-//            e.printStackTrace();
             throw new RuntimeException("Error parsing text date to date Object");
         }
 
@@ -57,6 +58,7 @@ public class SubscriptionController {
         return theSubscription;
     }
 
+    // TODO: implement in gui?
     // customer that unsubscribes
     @DeleteMapping("/subscribes/{subscriptionId}")
     public Subscription unsubscribeCustomer(@PathVariable int subscriptionId){

@@ -1,6 +1,9 @@
 package com.aris.gymmanager.service;
 
+import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.exception.CustomerNotFoundException;
+import com.aris.gymmanager.exception.PlanNotFoundException;
 import com.aris.gymmanager.repository.IPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +22,23 @@ public class PlanService implements IPlanService {
     }
 
     @Override
+    public Plan save(Plan plan) {
+        return planRepository.save(plan);
+    }
 
-    public void save(Plan plan) {
-        planRepository.save(plan);
+    @Override
+    public Plan updatePlan(Plan plan){
+        if(!planRepository.existsById(plan.getId())){
+            throw new PlanNotFoundException("Plan not found");
+        }
+        Plan retrievedPlan = findPlanById(plan.getId());
+        if(retrievedPlan == null){
+            throw new PlanNotFoundException("Plan not found");
+        }
+
+        retrievedPlan = plan;
+
+        return planRepository.save(retrievedPlan);
     }
 
     @Override

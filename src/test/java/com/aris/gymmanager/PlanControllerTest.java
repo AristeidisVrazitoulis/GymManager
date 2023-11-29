@@ -2,19 +2,15 @@ package com.aris.gymmanager;
 
 
 import com.aris.gymmanager.entity.Customer;
-import com.aris.gymmanager.repository.ICustomerRepository;
-import com.aris.gymmanager.restcontroller.CustomerController;
-import com.aris.gymmanager.service.ICustomerService;
+import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.restcontroller.PlanController;
+
+import com.aris.gymmanager.service.IPlanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,24 +28,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-
-
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(PlanController.class)
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @AutoConfigureMockMvc(addFilters = false)
-public class CustomerControllerTest {
+public class PlanControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,74 +48,69 @@ public class CustomerControllerTest {
     ObjectWriter objectWriter = objectMapper.writer();
 
     @MockBean
-    private ICustomerService customerService;
-    @MockBean
-    private ICustomerRepository customerRepository;
+    private IPlanService planService;
 
-
-    Customer cust1;
-    Customer cust2;
-    Customer cust3;
+    Plan plan1;
+    Plan plan2;
+    Plan plan3;
 
     @BeforeEach
     public void setUp(){
-        cust1 = new Customer(100,"Aris", "Vrazitoulis", "dsdssd@gmail.com", "0000000000");
-        cust2 = new Customer(101, "Nikos", "Vrazitoulis", "dd@gmail.com", "1111111111");
-        cust3 = new Customer(102,"Giorgos", "Nakos", "nakos@gmail.com", "2222222222");
+        plan1 = new Plan(100,"title1", 30, "d1", 30, null);
+        plan2 = new Plan(101, "title2", 360, "d2", 180, null);
+        plan3 = new Plan(102,"title3", 180, "d3", 100, null);
 
     }
 
-    // GET - /api/customers/
-    // Fetch all customers
+
+    // GET - /api/plans/
+    // Fetch all plan
     @Test
-    public void getAllCustomersTest() throws Exception{
-        List<Customer> records = new ArrayList<>(Arrays.asList(cust1, cust2, cust3));
-        List<Customer> all = customerService.findAll();
+    public void getAllPlansTest() throws Exception{
+        List<Plan> records = new ArrayList<>(Arrays.asList(plan1, plan2, plan3));
+        List<Plan> all = planService.findAll();
         when(all).thenReturn(records);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/customers")
+                        .get("/api/plans")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(3)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[2].firstName").value("Giorgos"));
-
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].title").value("title3"));
     }
 
-
-    // GET - /api/customers/{customerId}
-    // Fetch customer by id
+    // GET - /api/plans
+    // Fetch all plans test
     @Test
-    public void getCustomerByIdTest() throws Exception {
-        when(customerService.findCustomerById(cust1.getId())).thenReturn(cust1);
+    public void getPlanByIdTest() throws Exception{
+        when(planService.findPlanById(plan1.getId())).thenReturn(plan1);
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/customers/100")
+                        .get("/api/plans/100")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", notNullValue()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Aris"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("title1"));
     }
 
 
-    // POST - /api/customers
-    // Create a customer
+
+    // POST - /api/plans
+    // Create a plan
     @Test
-    public void createCustomerTest() throws Exception {
-        Customer cust = Customer.builder()
+    public void createPlanTest() throws Exception {
+        Plan plan = Plan.builder()
                 .id(40)
-                .firstName("H")
-                .lastName("P")
-                .active(false)
-                .email("har@gmail.com")
-                .phone("1933321922")
-                .plan(null)
+                .title("new_title")
+                .duration(30)
+                .description("new_desc")
+                .price(0.0f)
                 .build();
 
-        String content = objectWriter.writeValueAsString(cust);
-        when(customerService.save(any(Customer.class))).thenReturn(cust);
+        String content = objectWriter.writeValueAsString(plan);
+        when(planService.save(plan)).thenReturn(plan);
 
 
-        ResultActions response = mockMvc.perform(post("/api/customers")
+        ResultActions response = mockMvc.perform(post("/api/plans")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(content));
@@ -140,22 +125,20 @@ public class CustomerControllerTest {
     // PUT - /api/customers
     // Create a customer
     @Test
-    public void updateCustomerTest() throws Exception {
-        Customer updatedRecord = Customer.builder()
-                .id(102)
-                .firstName("Harry")
-                .lastName("Dursley")
-                .active(false)
-                .email("hasrryPotter@gmail.com")
-                .phone("1941921922")
-                .plan(null)
+    public void updatePlanTest() throws Exception {
+        Plan updatedRecord = Plan.builder()
+                .id(100)
+                .title("new_title")
+                .duration(30)
+                .description("new_desc")
+                .price(0.0f)
                 .build();
 
-        when(customerService.updateCustomer(any(Customer.class))).thenReturn(updatedRecord);
+        when(planService.updatePlan(updatedRecord)).thenReturn(updatedRecord);
 
         String updatedContent = objectWriter.writeValueAsString(updatedRecord);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/customers")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/plans")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(updatedContent);
@@ -163,23 +146,23 @@ public class CustomerControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", notNullValue()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Dursley"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("new_title"));
 
     }
 
-    // DELETE - /api/customers/{customerId}
+
+    // DELETE - /api/plans/{planId}
     // Delete a customer by its id
     @Test
-    public void deleteCustomerTest() throws Exception {
-        when(customerService.findCustomerById(cust2.getId())).thenReturn(cust2);
+    public void deletePlanTest() throws Exception {
+        when(planService.findPlanById(plan2.getId())).thenReturn(plan2);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.delete("/api/customers/101")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.delete("/api/plans/101")
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk());
     }
-
 
 
 
