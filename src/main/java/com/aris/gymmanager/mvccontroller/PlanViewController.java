@@ -1,6 +1,7 @@
 package com.aris.gymmanager.mvccontroller;
 
 
+import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
@@ -27,7 +28,7 @@ import java.util.Locale;
 public class PlanViewController {
 
     private RestCaller restCaller;
-
+    private Gson gson = new Gson();
     @Autowired
     public PlanViewController(RestCaller restCaller){
         this.restCaller = restCaller;
@@ -36,7 +37,7 @@ public class PlanViewController {
     @GetMapping("/plan-list")
     public String getPlans(Model model) throws IOException {
 
-        Response response = restCaller.getAllPlansCall();
+        Response response = restCaller.makeGetRequest("http://localhost:8080/api/plans");
         Gson gson = new Gson();
         Type listType = new TypeToken<List<Plan>>() {}.getType();
 
@@ -50,14 +51,13 @@ public class PlanViewController {
     @GetMapping("/plan-subscription")
     public String getPlanSubscriptions(@RequestParam int customerId, @RequestParam String planName, Model model) throws IOException {
 
-        Gson gson = new Gson();
         // Get all Customer's Subscriptions
-        Response subscriptionResponse = restCaller.getSubscriptionByCustomerCall(customerId);
+        Response subscriptionResponse = restCaller.makeGetRequest("http://localhost:8080/api/plans-customer/"+customerId);
         Type listType = new TypeToken<List<SubscriptionDTO>>() {}.getType();
         List<SubscriptionDTO> subscriptions = gson.fromJson(subscriptionResponse.body().string(), listType);
 
         // Get Customer data
-        Response responseCustomer = restCaller.getCustomerByIdCall(customerId);
+        Response responseCustomer = restCaller.makeGetRequest("http://localhost:8080/api/customers/"+customerId);
         Customer customer = gson.fromJson(responseCustomer.body().string(), Customer.class);
 
         // Get Customer object by calling the RESTful API
@@ -68,6 +68,23 @@ public class PlanViewController {
         // model.addAttribute("plans", plans);
 
         return "customer/subscriptions";
+    }
+
+
+    @GetMapping("/customersByPlan")
+    public String showCustomersByPlan(@RequestParam int planId, Model model) throws Exception{
+        // Get all Plans' Customers
+        Response customersResponse = restCaller.makeGetRequest("http://localhost:8080/api/customers/plan?planId="+planId);
+        Type listType = new TypeToken<List<CustomerDTO>>() {}.getType();
+        List<CustomerDTO> customers = gson.fromJson(customersResponse.body().string(), listType);
+
+        Response planResponse = restCaller.getPlanByIdCall(planId);
+        Plan plan = gson.fromJson(planResponse.body().string(), Plan.class);
+
+        model.addAttribute("customers", customers);
+
+        model.addAttribute("planTitle", plan.getTitle());
+        return "plan/customers-by-plan";
     }
 
 
@@ -100,9 +117,7 @@ public class PlanViewController {
 
     @GetMapping("/plan-edit")
     public String editPlan(@RequestParam("planId") int planId, Model theModel) throws IOException{
-        Response response = restCaller.getPlanByIdCall(planId);
-
-        Gson gson = new Gson();
+        Response response = restCaller.makeGetRequest("http://localhost:8080/api/plans/"+planId);
 
         Plan plan = gson.fromJson(response.body().string(), Plan.class);
         theModel.addAttribute(plan);
@@ -116,7 +131,6 @@ public class PlanViewController {
     @GetMapping("/plan-delete")
     public String deletePlan(@RequestParam("planId") int planId) throws IOException{
         restCaller.deletePlanCall(planId);
-        // theModel.addAttribute("Message", "Deleted Successfully");
         return "redirect:/plan-list";
     }
 

@@ -10,7 +10,6 @@ public interface IPlanRepository extends JpaRepository<Plan, Integer> {
 
     List<Plan> findPlanByTitle(String title);
 
-    // TODO: Display customers per plan
-    List<Customer> findCustomersByTitle(String title);
+
 
 }

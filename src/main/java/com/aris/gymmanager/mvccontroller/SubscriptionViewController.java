@@ -2,6 +2,7 @@ package com.aris.gymmanager.mvccontroller;
 
 
 import com.aris.gymmanager.entity.Plan;
+import com.aris.gymmanager.exception.ErrorResponse;
 import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class SubscriptionViewController {
 
     private RestCaller restCaller;
+    private Gson gson = new Gson();
 
     public SubscriptionViewController(RestCaller restCaller) {
         this.restCaller = restCaller;
@@ -33,8 +35,7 @@ public class SubscriptionViewController {
     @GetMapping("/subscription-form")
     public String showSubscriptionForm(@RequestParam int customerId, @RequestParam String planName, Model model) throws IOException {
         // Get all Plans
-        Response response = restCaller.getAllPlansCall();
-        Gson gson = new Gson();
+        Response response = restCaller.makeGetRequest("http://localhost:8080/api/plans");
 
         Type listType = new TypeToken<List<Plan>>() {}.getType();
         List<Plan> plans = gson.fromJson(response.body().string(), listType);
@@ -49,13 +50,17 @@ public class SubscriptionViewController {
                     MediaType.APPLICATION_ATOM_XML_VALUE,
                     MediaType.APPLICATION_JSON_VALUE
             })
-    public String saveSubscriptionForm(@RequestParam Map<String, String> payload) throws IOException{
+    public String saveSubscriptionForm(@RequestParam Map<String, String> payload, Model model) throws IOException{
         String planName = payload.get("planTitle");
         String startDate = payload.get("startDate");
         Integer customerId = Integer.parseInt(payload.get("customerId"));
 
         Response response = restCaller.addPlanToCustomer(planName, customerId, startDate);
-
+        if(response.code() == 400){
+            ErrorResponse errorResponse = gson.fromJson(response.body().string(), ErrorResponse.class);
+            model.addAttribute("errorObject", errorResponse);
+            return "error";
+        }
         return "redirect:/plan-subscription?customerId="+customerId+"&planName="+planName;
     }
 

@@ -3,18 +3,14 @@ package com.aris.gymmanager.restcontroller;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
-import com.aris.gymmanager.entity.Plan;
-import com.aris.gymmanager.exception.CustomerNotFoundException;
+import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.exception.InvalidModelException;
-import com.aris.gymmanager.exception.PlanNotFoundException;
 import com.aris.gymmanager.service.ICustomerService;
-import com.aris.gymmanager.service.IPlanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,20 +47,17 @@ public class CustomerController {
 
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
-            throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
+            throw new NotFoundException("Customer id:"+customerId+" not Found");
         }
         return customer;
     }
 
-    // TODO: Delete that?
-//    @GetMapping("/customers/search")
-//    public List<Customer> findCustomerByLastName(@RequestParam String lastName){
-//        List<Customer> customer = customerService.findCustomerByLastName(lastName);
-//        if(customer == null){
-//            throw new CustomerNotFoundException("Customer last name:"+lastName+" not Found");
-//        }
-//        return customer;
-//    }
+    @GetMapping("/customers/plan")
+    public List<CustomerDTO> getCustomersByPlanTitle(@RequestParam int planId){
+        List<Customer> customers = customerService.getCustomersByPlanId(planId);
+        return customerService.convertToDTO(customers);
+    }
+
 
     @PostMapping("/customers")
     @ResponseStatus(HttpStatus.CREATED)
@@ -88,7 +81,7 @@ public class CustomerController {
     public void deleteCustomerById(@PathVariable int customerId){
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
-            throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
+            throw new NotFoundException("Customer id:"+customerId+" not Found");
         }
         customerService.deleteCustomerById(customerId);
     }

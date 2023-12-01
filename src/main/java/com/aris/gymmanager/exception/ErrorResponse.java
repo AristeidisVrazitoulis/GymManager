@@ -1,15 +1,13 @@
 package com.aris.gymmanager.exception;
 
-import org.springframework.http.HttpStatus;
+import java.util.Date;
 
-import java.time.ZonedDateTime;
-
-public class CustomerErrorResponse {
+public class ErrorResponse {
     private final String message;
     private final int status;
-    private final ZonedDateTime timestamp;
+    private final Date timestamp;
 
-    public CustomerErrorResponse(String message, int status, ZonedDateTime timestamp) {
+    public ErrorResponse(String message, int status, Date timestamp) {
         this.message = message;
         this.status = status;
         this.timestamp = timestamp;
@@ -25,7 +23,7 @@ public class CustomerErrorResponse {
         return status;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 }

@@ -1,13 +1,9 @@
 package com.aris.gymmanager.restcontroller;
 
 
-import com.aris.gymmanager.dto.SubscriptionDTO;
-import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
-import com.aris.gymmanager.exception.CustomerNotFoundException;
-import com.aris.gymmanager.exception.PlanNotFoundException;
+import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.service.IPlanService;
-import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +33,11 @@ public class PlanController {
 
         Plan plan = planService.findPlanById(planId);
         if(plan == null){
-            throw new PlanNotFoundException("Plan id:"+planId+" not Found");
+            throw new NotFoundException("Plan id:"+planId+" not Found");
         }
         return plan;
     }
+
 
 
     @PostMapping("/plans")
@@ -61,7 +58,7 @@ public class PlanController {
     public void deletePlanById(@PathVariable int planId){
         Plan plan = planService.findPlanById(planId);
         if(plan == null){
-            throw new PlanNotFoundException("Plan id:"+planId+" not Found");
+            throw new NotFoundException("Plan id:"+planId+" not Found");
         }
         planService.deletePlanById(planId);
     }

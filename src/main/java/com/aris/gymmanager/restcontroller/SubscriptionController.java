@@ -3,7 +3,8 @@ package com.aris.gymmanager.restcontroller;
 import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Subscription;
-import com.aris.gymmanager.exception.CustomerNotFoundException;
+import com.aris.gymmanager.exception.InvalidModelException;
+import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.service.ICustomerService;
 import com.aris.gymmanager.service.ISubscriptionService;
 import org.springframework.http.HttpStatus;
@@ -48,13 +49,17 @@ public class SubscriptionController {
         } catch(ParseException e){
             throw new RuntimeException("Error parsing text date to date Object");
         }
-
         Customer customer = customerService.findCustomerById(customerId);
         if(customer == null){
-            throw new CustomerNotFoundException("Customer id:"+customerId+" not Found");
+            throw new NotFoundException("Customer id:"+customerId+" not Found");
         }
         Subscription theSubscription = subscriptionService.createSubscription(customer, planName, startDate);
-        subscriptionService.saveSubscription(theSubscription);
+        // There might be an overlap with other subscriptions
+        if(subscriptionService.subscriptionIsValid(theSubscription, customerId)){
+            subscriptionService.saveSubscription(theSubscription);
+        }else{
+            throw new InvalidModelException("Request is invalid because there is an overlap");
+        }
         return theSubscription;
     }
 

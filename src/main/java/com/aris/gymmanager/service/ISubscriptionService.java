@@ -16,5 +16,7 @@ public interface ISubscriptionService {
 
     List<Subscription> findSubscriptionsByCustomerId(int customerId);
 
+    boolean subscriptionIsValid(Subscription subscription, int customerId);
+
     List<SubscriptionDTO> convertToDTO(List<Subscription> subscriptions);
 }

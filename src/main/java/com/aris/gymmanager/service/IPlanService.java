@@ -1,6 +1,7 @@
 package com.aris.gymmanager.service;
 
 import com.aris.gymmanager.dto.CustomerDTO;
+import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
 
 import java.util.List;
