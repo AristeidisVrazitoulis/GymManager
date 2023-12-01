@@ -58,7 +58,7 @@ public class SubscriptionController {
         if(subscriptionService.subscriptionIsValid(theSubscription, customerId)){
             subscriptionService.saveSubscription(theSubscription);
         }else{
-            throw new InvalidModelException("Request is invalid because there is an overlap");
+            throw new InvalidModelException("Request is invalid because there is an overlap on the subscription");
         }
         return theSubscription;
     }

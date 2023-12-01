@@ -93,12 +93,14 @@ public class SubscriptionService implements ISubscriptionService{
     @Override
     public boolean subscriptionIsValid(Subscription subscription, int customerId){
         List<Subscription> subscriptions = findSubscriptionsByCustomerId(customerId);
-        Date startDate = subscription.getStartDate();
-        Date endDate = subscription.getEndDate();
+        Date s1 = subscription.getStartDate();
+        Date e1 = subscription.getEndDate();
 
         // check if it has an overlap
         for(Subscription sub : subscriptions){
-            if((sub.getStartDate()).compareTo(endDate) < 0 || startDate.compareTo(sub.getEndDate()) < 0){
+            Date s2 = sub.getStartDate();
+            Date e2 = sub.getEndDate();
+            if( (s2.compareTo(e1) < 0 && s1.compareTo(s2) < 0) || (s1.compareTo(e2) < 0 && s2.compareTo(s1) < 0) ){
                 return false;
             }
         }
