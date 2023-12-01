@@ -4,7 +4,7 @@ import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.entity.Subscription;
-import com.aris.gymmanager.exception.PlanNotFoundException;
+import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.repository.IPlanRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class SubscriptionService implements ISubscriptionService{
         if(result.isPresent()){
             theSubscription = result.get();
         } else {
-            throw new RuntimeException("Customer not found - id :"+subscriptionId);
+            throw new RuntimeException("Subscription not found - id :"+subscriptionId);
         }
         return theSubscription;
     }
@@ -47,7 +47,7 @@ public class SubscriptionService implements ISubscriptionService{
     public Subscription createSubscription(Customer customer, String title, Date startDate){
         List<Plan> plans = planRepository.findPlanByTitle(title);
         if(plans == null){
-            throw new PlanNotFoundException("Plan '"+title+"' not found");
+            throw new NotFoundException("Plan '"+title+"' not found");
         }
 
         if(plans.size() > 1 ){
@@ -85,11 +85,25 @@ public class SubscriptionService implements ISubscriptionService{
 
     @Override
     public List<Subscription> findSubscriptionsByCustomerId(int customerId){
-        // Check if customer id exists
+        // customer id is already checked at the controller
         List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsByCustomerId(customerId);
         return subscriptions;
     }
 
+    @Override
+    public boolean subscriptionIsValid(Subscription subscription, int customerId){
+        List<Subscription> subscriptions = findSubscriptionsByCustomerId(customerId);
+        Date startDate = subscription.getStartDate();
+        Date endDate = subscription.getEndDate();
+
+        // check if it has an overlap
+        for(Subscription sub : subscriptions){
+            if((sub.getStartDate()).compareTo(endDate) < 0 || startDate.compareTo(sub.getEndDate()) < 0){
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public List<SubscriptionDTO> convertToDTO(List<Subscription> subscriptions){

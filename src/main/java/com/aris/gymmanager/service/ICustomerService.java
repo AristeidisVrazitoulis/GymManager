@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ICustomerService {
 
+    List<Customer> getCustomersByPlanId(int planId);
+
     Customer save(Customer theCustomer);
 
     List<CustomerDTO> convertToDTO(List<Customer> customers);
@@ -15,8 +17,6 @@ public interface ICustomerService {
     Customer findCustomerById(int id);
 
     List<Customer> findAll();
-
-//    List<Customer> findCustomerByLastName(String lastName);
 
     void deleteCustomerById(int id);
 

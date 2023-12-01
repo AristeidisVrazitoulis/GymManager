@@ -9,12 +9,16 @@ import java.util.List;
 
 public interface ICustomerRepository extends JpaRepository<Customer, Integer>{
 
-    List<Customer> findCustomerByLastName(String lastName);
+//    List<Customer> findCustomerByLastName(String lastName);
+//
+//    @Query(value = "SELECT c.customer_id, c.first_name, c.last_name, p.title FROM customer c " +
+//                        "INNER JOIN plan p " +
+//                        "ON p.plan_id=c.plan_id", nativeQuery = true)
+//    List<Object> findCustomersWithPlan();
 
-    @Query(value = "SELECT c.customer_id, c.first_name, c.last_name, p.title FROM customer c " +
-                        "INNER JOIN plan p " +
-                        "ON p.plan_id=c.plan_id", nativeQuery = true)
-    List<Object> findCustomersWithPlan();
+
+    // TODO: Display customers per plan
+    List<Customer> findByPlanId(int id);
 
 
 

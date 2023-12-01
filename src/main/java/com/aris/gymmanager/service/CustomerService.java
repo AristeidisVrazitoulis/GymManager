@@ -3,8 +3,9 @@ package com.aris.gymmanager.service;
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Subscription;
-import com.aris.gymmanager.exception.CustomerNotFoundException;
+import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.repository.ICustomerRepository;
+import com.aris.gymmanager.repository.IPlanRepository;
 import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,15 @@ public class CustomerService implements ICustomerService {
 
     private ICustomerRepository customerRepository;
     private ISubscriptionRepository subscriptionRepository;
+    private IPlanRepository planRepository;
 
 
 
     @Autowired
-    public CustomerService(ICustomerRepository customerRepository, ISubscriptionRepository subscriptionRepository){
+    public CustomerService(ICustomerRepository customerRepository, ISubscriptionRepository subscriptionRepository, IPlanRepository planRepository) {
         this.customerRepository = customerRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.planRepository = planRepository;
     }
 
     @Override
@@ -74,17 +77,27 @@ public class CustomerService implements ICustomerService {
     public Customer updateCustomer(Customer customer){
 
         if(!customerRepository.existsById(customer.getId())){
-            throw new CustomerNotFoundException("Customer not found");
+            throw new NotFoundException("Customer not found");
         }
         Customer retrievedCustomer = findCustomerById(customer.getId());
         if(retrievedCustomer == null){
-            throw new CustomerNotFoundException("Customer not found");
+            throw new NotFoundException("Customer not found");
         }
 
         retrievedCustomer = customer;
 
         return save(retrievedCustomer);
     }
+
+    @Override
+    public List<Customer> getCustomersByPlanId(int planId){
+        if(!planRepository.existsById(planId)){
+            throw new NotFoundException("Plan with id:"+planId+" not found");
+        }
+        return customerRepository.findByPlanId(planId);
+    }
+
+
 
     @Override
     public Customer save(Customer theCustomer) {
