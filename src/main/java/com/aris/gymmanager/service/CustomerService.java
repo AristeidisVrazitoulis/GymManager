@@ -68,12 +68,7 @@ public class CustomerService implements ICustomerService {
         return customers;
     }
 
-// TODO: Delete that?
-//    @Override
-//    public List<Customer> findCustomerByLastName(String lastName) {
-//        return customerRepository.findCustomerByLastName(lastName);
-//    }
-
+    @Override
     public Customer updateCustomer(Customer customer){
 
         if(!customerRepository.existsById(customer.getId())){
@@ -113,26 +108,36 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void updateCustomersActivationState(){
-        List<Subscription> subs = subscriptionRepository.findAll();
-        Date now = new Date(); Date startDate; Date endDate;
-        Customer customer;
+        List<Subscription> subs;
+        List<Customer> customers = customerRepository.findAll();
 
-        for(Subscription sub : subs){
+
+
+        for(Customer cust: customers)
+        {
+            boolean isActive = customerIsActive(cust);
+           if(isActive && !cust.isActive()){
+               cust.setActive(true);
+               save(cust);
+           }else if(!isActive && cust.isActive()){
+               cust.setActive(false);
+               save(cust);
+           }
+        }
+    }
+
+    private boolean customerIsActive(Customer cust) {
+        Date startDate, endDate;
+        Date now = new Date();
+        List<Subscription> subs = subscriptionRepository.findSubscriptionsByCustomerId(cust.getId());
+        for (Subscription sub : subs) {
             startDate = sub.getStartDate();
             endDate = sub.getEndDate();
-            customer = findCustomerById(sub.getCustomerId());
-
-            // if today is greater than startDate AND today is less than endDate then customer is active
-            if(now.compareTo(startDate) >= 0 && now.compareTo(endDate) <= 0 && !customer.getPlan().getTitle().equals("NoPlan")){
-                customer.setActive(true);
-                // update database
-                save(customer);
-
-            }else{
-                customer.setActive(false);
-                // update database
-                save(customer);
+            if (now.compareTo(startDate) >= 0 && now.compareTo(endDate) <= 0) {
+                return true;
             }
+
         }
+        return false;
     }
 }

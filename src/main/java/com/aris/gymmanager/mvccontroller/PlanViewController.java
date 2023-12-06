@@ -5,24 +5,21 @@ import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.dto.SubscriptionDTO;
 import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
-import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Locale;
 
 @Controller
 public class PlanViewController {
@@ -44,7 +41,7 @@ public class PlanViewController {
         List<Plan> plans = gson.fromJson(response.body().string(), listType);
         model.addAttribute("plans", plans);
         model.addAttribute("total", plans.size());
-
+        response.close();
         return "plan/all";
     }
 
@@ -66,7 +63,7 @@ public class PlanViewController {
         model.addAttribute("subscriptions", subscriptions);
         model.addAttribute("planName", planName);
         // model.addAttribute("plans", plans);
-
+        subscriptionResponse.close();
         return "customer/subscriptions";
     }
 
@@ -78,12 +75,13 @@ public class PlanViewController {
         Type listType = new TypeToken<List<CustomerDTO>>() {}.getType();
         List<CustomerDTO> customers = gson.fromJson(customersResponse.body().string(), listType);
 
-        Response planResponse = restCaller.getPlanByIdCall(planId);
+        Response planResponse = restCaller.makeGetRequest("http://localhost:8080/api/plans/"+planId);
         Plan plan = gson.fromJson(planResponse.body().string(), Plan.class);
 
         model.addAttribute("customers", customers);
 
         model.addAttribute("planTitle", plan.getTitle());
+        customersResponse.close();
         return "plan/customers-by-plan";
     }
 
@@ -121,7 +119,7 @@ public class PlanViewController {
 
         Plan plan = gson.fromJson(response.body().string(), Plan.class);
         theModel.addAttribute(plan);
-
+        response.close();
         return "plan/edit";
     }
 

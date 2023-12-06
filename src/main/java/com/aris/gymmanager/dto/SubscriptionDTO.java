@@ -1,5 +1,4 @@
 package com.aris.gymmanager.dto;
-import java.util.Date;
 public class SubscriptionDTO {
     private int customerId;
     private String planName;

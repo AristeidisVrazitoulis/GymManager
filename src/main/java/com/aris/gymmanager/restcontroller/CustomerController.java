@@ -37,7 +37,9 @@ public class CustomerController {
 
     @GetMapping("/customers-plan")
     public List<CustomerDTO> findAllWithPlan(){
+        // firstly we check if a subscription has expired
         customerService.updateCustomersActivationState();
+
         List<Customer> customers = customerService.findAll();
         return customerService.convertToDTO(customers);
     }
@@ -52,6 +54,7 @@ public class CustomerController {
         return customer;
     }
 
+    // Fetches all the customers (subscribed or expired) of the plan with id : planId
     @GetMapping("/customers/plan")
     public List<CustomerDTO> getCustomersByPlanTitle(@RequestParam int planId){
         List<Customer> customers = customerService.getCustomersByPlanId(planId);
@@ -72,8 +75,10 @@ public class CustomerController {
     }
 
     @PutMapping("/customers")
-    public Customer updateCustomer(@Valid @RequestBody Customer customer){
-
+    public Customer updateCustomer(@Valid @RequestBody Customer customer, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new InvalidModelException("Invalid Input");
+        }
         return customerService.updateCustomer(customer);
     }
 

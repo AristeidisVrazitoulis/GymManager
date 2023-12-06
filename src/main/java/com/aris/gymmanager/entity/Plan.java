@@ -2,9 +2,7 @@ package com.aris.gymmanager.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.util.ArrayList;

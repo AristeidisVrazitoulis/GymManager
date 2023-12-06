@@ -63,16 +63,24 @@ public class SubscriptionController {
         return theSubscription;
     }
 
-    // TODO: implement in gui?
     // customer that unsubscribes
     @DeleteMapping("/subscribes/{subscriptionId}")
-    public Subscription unsubscribeCustomer(@PathVariable int subscriptionId){
+    public Subscription unsubscribeCustomer(@PathVariable int subscriptionId, @RequestParam int customerId){
 
         Subscription theSubscription = subscriptionService.findSubscriptionById(subscriptionId);
-        if(theSubscription == null){
+        Customer customer = customerService.findCustomerById(customerId);
+        Date now = new Date();
+
+        if(theSubscription == null || customer == null){
             throw new RuntimeException("Subscription id:"+subscriptionId+" not Found");
         }
         subscriptionService.deleteSubscriptionById(subscriptionId);
+
+        if(now.compareTo(theSubscription.getStartDate()) >= 0 && now.compareTo(theSubscription.getEndDate()) <= 0){
+            customer.setPlan(null);
+            customer.setActive(false);
+            customerService.updateCustomer(customer);
+        }
         return theSubscription;
     }
 }

@@ -19,16 +19,16 @@
                          th:object="${customer}" method="POST">
 
             <input type="text"th:field="*{firstName}"
-                   class="form-control mb-4 w-25" placeholder="First name">
+                   class="form-control mb-4 w-25" placeholder="First name" required>
 
             <input type="text"th:field="*{lastName}"
-                   class="form-control mb-4 w-25" placeholder="Last name">
+                   class="form-control mb-4 w-25" placeholder="Last name" required>
 
             <input type="text"th:field="*{email}"
-                   class="form-control mb-4 w-25" placeholder="Email">
+                   class="form-control mb-4 w-25" placeholder="Email" required>
 
             <input type="text"th:field="*{phone}"
-                   class="form-control mb-4 w-25" placeholder="Phone Number">
+                   class="form-control mb-4 w-25" placeholder="Phone Number" required>
 
 
             <button type="submit" class="btn btn-info col-2">Save</button>

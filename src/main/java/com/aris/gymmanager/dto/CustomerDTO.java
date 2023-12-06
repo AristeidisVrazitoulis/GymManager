@@ -1,6 +1,5 @@
 package com.aris.gymmanager.dto;
 
-import com.aris.gymmanager.entity.Customer;
 
 public class CustomerDTO {
 

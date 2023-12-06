@@ -7,18 +7,15 @@ import com.aris.gymmanager.utils.RestCaller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.Response;
-import org.hibernate.annotations.GeneratorType;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +38,7 @@ public class SubscriptionViewController {
         List<Plan> plans = gson.fromJson(response.body().string(), listType);
         model.addAttribute("plans", plans);
         model.addAttribute("customerId", customerId);
+        response.close();
         return "subscription/form";
     }
 
@@ -61,6 +59,15 @@ public class SubscriptionViewController {
             model.addAttribute("errorObject", errorResponse);
             return "error";
         }
+        response.close();
+        return "redirect:/plan-subscription?customerId="+customerId+"&planName="+planName;
+    }
+
+    @GetMapping("/delete-subscription")
+    public String deleteSubscription(@RequestParam int subscriptionId, @RequestParam String planName,
+                                     @RequestParam int customerId) throws Exception{
+        Response response = restCaller.deleteSubscriptionCall(subscriptionId, customerId);
+        response.close();
         return "redirect:/plan-subscription?customerId="+customerId+"&planName="+planName;
     }
 

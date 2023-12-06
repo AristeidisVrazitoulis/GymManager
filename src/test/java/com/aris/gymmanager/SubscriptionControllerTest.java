@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.ArgumentMatchers.any;
 
 @WebMvcTest(SubscriptionController.class)
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
@@ -59,9 +58,9 @@ public class SubscriptionControllerTest {
     public void setUp() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
-        String dateInString = "05/06/2024";
+        String dateInString = "05/06/2023";
         Date date = formatter.parse(dateInString);
-        subscription1 = new Subscription(100,0, 0, new Date(), new Date());
+        subscription1 = new Subscription(100,0, 0, new Date(), date);
         subscription2 = new Subscription(101,1, 0, new Date(), date);
 
     }
@@ -95,7 +94,7 @@ public class SubscriptionControllerTest {
     {
         int id = 0;
         String planName = "Crossfit";
-        String startDateText = "2023-05-06";
+        String startDateText = "2025-05-06";
         Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateText);
 
         Customer cust1 = new Customer(0,"Aris", "Vrazitoulis", "dsdssd@gmail.com", "0000000000");
@@ -105,6 +104,7 @@ public class SubscriptionControllerTest {
         when(customerService.findCustomerById(id)).thenReturn(cust1);
         when(subscriptionService.createSubscription(cust1, planName, startDate)).thenReturn(subscription1);
         when(subscriptionService.saveSubscription(subscription1)).thenReturn(subscription1);
+        when(subscriptionService.subscriptionIsValid(subscription1, id)).thenReturn(true);
 
         ResultActions response = mockMvc.perform(post("/api/subscribes")
                 .contentType(MediaType.APPLICATION_JSON)

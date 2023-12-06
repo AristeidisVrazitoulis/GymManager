@@ -19,7 +19,7 @@ public class RestCaller {
 
     }
 
-
+    // Makes GET requests
     public Response makeGetRequest(String endpoint) throws IOException {
 
         Request request = new Request.Builder()
@@ -30,40 +30,7 @@ public class RestCaller {
 
     }
 
-
-
-//    public Response getCustomerByIdCall(int id) throws IOException {
-//
-//        Request request = new Request.Builder()
-//                .url("http://localhost:8080/api/customers/"+id)
-//                .build();
-//        Response response = client.newCall(request).execute();
-//        return response;
-//
-//    }
-//
-//
-//    // Calls REST API to get all customers in JSON form
-//    public Response getAllCustomersCall() throws IOException{
-//        Request request = new Request.Builder()
-//                .url("http://localhost:8080/api/customers-plan")
-//                .build();
-//
-//        Response response = client.newCall(request).execute();
-//        return response;
-//    }
-
-    public Response deleteCustomerCall(int customerId) throws IOException{
-        MediaType mediaType = MediaType.parse("text/plain");
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/customers/"+customerId)
-                .method("DELETE", body)
-                .build();
-        Response response = client.newCall(request).execute();
-        return response;
-    }
-
+    // POST - saves a customer to the database
     public void saveCustomerCall(Customer customer, String method) throws IOException {
         MediaType mediaType = MediaType.parse("application/json");
 
@@ -76,9 +43,12 @@ public class RestCaller {
                 .method(method, body)
                 .addHeader("Content-Type", "application/json")
                 .build();
-        Response response = client.newCall(request).execute();
-    }
 
+        Response response = client.newCall(request).execute();
+        response.close();
+
+    }
+    // POST - save a subscription to the database
     public void saveSubscriptionCall(int id, String planName) throws IOException{
         MediaType mediaType = MediaType.parse("application/json");
         okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "{\r\n    \"planName\" : \""+planName+"\",\r\n    \"customerId\" : "+id+"\r\n}");
@@ -88,51 +58,10 @@ public class RestCaller {
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = client.newCall(request).execute();
+        response.close();
     }
 
-    public Response getSubscriptionByCustomerCall(int customerId) throws IOException{
-        MediaType mediaType = MediaType.parse("text/plain");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans-customer/"+customerId)
-                .build();
-        Response response = client.newCall(request).execute();
-        return response;
-    }
-
-
-
-    // Calls REST API to get all plans in JSON form
-    public Response getAllPlansCall() throws IOException{
-        Response response = null;
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans")
-                .build();
-
-        response = client.newCall(request).execute();
-        return response;
-    }
-
-
-
-    public void deletePlanCall(int planId) throws IOException{
-        MediaType mediaType = MediaType.parse("text/plain");
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans/"+planId)
-                .method("DELETE", body)
-                .build();
-        Response response = client.newCall(request).execute();
-    }
-
-    public Response getPlanByIdCall(int id) throws IOException{
-
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/plans/"+id)
-                .build();
-        return client.newCall(request).execute();
-
-    }
-
+    // POST - saves a plan to the database
     public void savePlanCall(Plan plan, String method) throws IOException {
         String content = ow.writeValueAsString(plan);
 
@@ -145,9 +74,10 @@ public class RestCaller {
                 .addHeader("Content-Type", "application/json")
                 .build();
         Response response = client.newCall(request).execute();
+        response.close();
     }
 
-    // POST
+    // POST - customer subscribes to a plan
     public Response addPlanToCustomer(String planName, int customerId, String startDate) throws IOException{
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"planName\" : \""+planName+"\",\r\n    \"customerId\" : "+customerId+",\r\n    \"startDate\" : \""+startDate+"\"\r\n}");
@@ -161,10 +91,36 @@ public class RestCaller {
     }
 
 
-    // GET
-    public Response getCustomersByPlan(int planId) throws IOException{
+    // DELETE - a plan
+    public void deletePlanCall(int planId) throws IOException{
+        MediaType mediaType = MediaType.parse("text/plain");
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
         Request request = new Request.Builder()
-                .url("http://localhost:8080/api/customers/plan?planId="+planId)
+                .url("http://localhost:8080/api/plans/"+planId)
+                .method("DELETE", body)
+                .build();
+        Response response = client.newCall(request).execute();
+        response.close();
+    }
+    // Delete a customer
+    public Response deleteCustomerCall(int customerId) throws IOException{
+        MediaType mediaType = MediaType.parse("text/plain");
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url("http://localhost:8080/api/customers/"+customerId)
+                .method("DELETE", body)
+                .build();
+        Response response = client.newCall(request).execute();
+        return response;
+    }
+
+
+    public Response deleteSubscriptionCall(int subscriptionId, int customerId) throws Exception{
+        MediaType mediaType = MediaType.parse("text/plain");
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url("http://localhost:8080/api/subscribes/"+subscriptionId+"?customerId="+customerId)
+                .method("DELETE", body)
                 .build();
         Response response = client.newCall(request).execute();
         return response;

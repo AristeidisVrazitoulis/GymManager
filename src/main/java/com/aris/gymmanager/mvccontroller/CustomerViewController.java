@@ -42,6 +42,7 @@ public class CustomerViewController {
             throw new NotFoundException("Customer id:"+customerId+" not Found");
         }
         theModel.addAttribute("customer", customer);
+        response.close();
         return "customer/info";
     }
 
@@ -56,7 +57,7 @@ public class CustomerViewController {
         List<CustomerDTO> customers = gson.fromJson(response.body().string(), listType);
         model.addAttribute("customers", customers);
         model.addAttribute("total", customers.size());
-
+        response.close();
         return "customer/all";
     }
 
@@ -73,7 +74,7 @@ public class CustomerViewController {
         Response response = restCaller.makeGetRequest("http://localhost:8080/api/customers/"+customerId);
         Customer customer = gson.fromJson(response.body().string(), Customer.class);
         theModel.addAttribute(customer);
-
+        response.close();
         return "customer/edit";
     }
 
@@ -81,6 +82,7 @@ public class CustomerViewController {
     @GetMapping("/customer-delete")
     public String deleteCustomer(@RequestParam("customerId") int customerId) throws IOException{
         Response response = restCaller.deleteCustomerCall(customerId);
+        response.close();
         return "redirect:/customer-list";
     }
 
@@ -101,7 +103,6 @@ public class CustomerViewController {
 
     @PostMapping("/subscribe/{customerId}")
     public String subscribeCustomer(@PathVariable int customerId, @RequestParam String planName, Model theModel) throws IOException{
-
         restCaller.saveSubscriptionCall(customerId, planName);
         theModel.addAttribute("message", "subscription updated successfully");
         return "redirect:/customer/info";

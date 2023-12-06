@@ -14,11 +14,9 @@ public class Subscription {
     @Column(name="subscription_id")
     private int id;
 
-//    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private int customerId;
 
-//    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id")
     private int planId;
 
@@ -96,5 +94,30 @@ public class Subscription {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Subscription that = (Subscription) o;
+
+        if (id != that.id) return false;
+        if (customerId != that.customerId) return false;
+        if (planId != that.planId) return false;
+        if (!startDate.equals(that.startDate)) return false;
+        return endDate.equals(that.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + customerId;
+        result = 31 * result + planId;
+        result = 31 * result + startDate.hashCode();
+        result = 31 * result + endDate.hashCode();
+        return result;
     }
 }

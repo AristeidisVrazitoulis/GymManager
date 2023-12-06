@@ -1,6 +1,5 @@
 package com.aris.gymmanager.repository;
 
-import com.aris.gymmanager.entity.Customer;
 import com.aris.gymmanager.entity.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 

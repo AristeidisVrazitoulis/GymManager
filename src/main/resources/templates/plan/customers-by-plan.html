@@ -23,6 +23,7 @@
       <th>First Name</th>
       <th>Last Name</th>
       <th>State</th>
+      <th>Edit</th>
     </tr>
     </thead>
 
@@ -31,6 +32,8 @@
       <td th:text="${tempCustomer.firstName}" />
       <td th:text="${tempCustomer.lastName}" />
       <td class="isactive" th:text="${tempCustomer.active}" />
+      <td><a th:href="@{/customer-edit(customerId=${tempCustomer.customerId})}"
+             class="btn btn-secondary btn-sm">Edit Info</a> </td>
     </tr>
     </tbody>
 
