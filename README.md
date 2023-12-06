@@ -1,8 +1,8 @@
 # GymManager
 A web application that handles the customers' subscriptions of a gym
 
-Spring Boot for the BackEnd
-Spring MVC and Thymleaf for the FrontEnd
+Spring Boot for the BackEnd\
+Spring MVC and Thymeleaf for the FrontEnd
 
 For databases we use postgres and hibernate
 
