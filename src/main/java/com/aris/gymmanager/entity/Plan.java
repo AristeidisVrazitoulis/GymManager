@@ -31,7 +31,7 @@ public class Plan {
     @Column(name = "price")
     private float price;
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy = "plan", cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "plan", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JsonIgnoreProperties("plan")
     private List<Customer> customers;
 
@@ -102,6 +102,11 @@ public class Plan {
 
     public void setCustomers(List<Customer> customers) {
         this.customers = customers;
+    }
+
+    @PreRemove
+    private void preRemove() {
+        customers.forEach( child -> child.setPlan(null));
     }
 
     public void add(Customer tempCustomer){

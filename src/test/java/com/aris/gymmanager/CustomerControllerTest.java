@@ -10,11 +10,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,18 +27,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
 
 
 @WebMvcTest(CustomerController.class)
@@ -70,7 +60,7 @@ public class CustomerControllerTest {
     @BeforeEach
     public void setUp(){
         cust1 = new Customer(100,"Aris", "Vrazitoulis", "dsdssd@gmail.com", "0000000000");
-        cust2 = new Customer(101, "Nikos", "Vrazitoulis", "dd@gmail.com", "1111111111");
+        cust2 = new Customer(101, "Nikos", "Georgiou", "dd@gmail.com", "1111111111");
         cust3 = new Customer(102,"Giorgos", "Nakos", "nakos@gmail.com", "2222222222");
 
     }

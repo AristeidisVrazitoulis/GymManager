@@ -2,6 +2,7 @@ package com.aris.gymmanager.service;
 
 import com.aris.gymmanager.dto.CustomerDTO;
 import com.aris.gymmanager.entity.Customer;
+import com.aris.gymmanager.entity.Plan;
 import com.aris.gymmanager.entity.Subscription;
 import com.aris.gymmanager.exception.NotFoundException;
 import com.aris.gymmanager.repository.ICustomerRepository;
@@ -10,10 +11,10 @@ import com.aris.gymmanager.repository.ISubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService implements ICustomerService {
@@ -108,25 +109,50 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void updateCustomersActivationState(){
-        List<Subscription> subs;
         List<Customer> customers = customerRepository.findAll();
-
-
-
+        Plan plan = null;
         for(Customer cust: customers)
         {
-            boolean isActive = customerIsActive(cust);
-           if(isActive && !cust.isActive()){
-               cust.setActive(true);
-               save(cust);
-           }else if(!isActive && cust.isActive()){
-               cust.setActive(false);
-               save(cust);
-           }
+            // Get the subscription id which the customers is currently subscribed
+            int subId = customerIsActive(cust);
+
+            if(subId != -1)
+            {
+                plan = getPlanOfActiveSubscription(subId);
+                if(plan == null){
+                    throw new NotFoundException("Plan of subscription id:"+subId+" not found");
+                }
+                cust.setPlan(plan);
+                cust.setActive(true);
+                save(cust);
+            }
+            else if(subId == -1 && cust.isActive())
+            {
+                cust.setActive(false);
+                save(cust);
+            }
         }
     }
 
-    private boolean customerIsActive(Customer cust) {
+    private Plan getPlanOfActiveSubscription(int subscriptionId){
+        Optional<Subscription> result = subscriptionRepository.findById(subscriptionId);
+        Subscription subscription = null;
+
+        if(result.isPresent()) subscription = result.get();
+        else return null;
+        Optional<Plan> planResult = planRepository.findById(subscription.getPlanId());
+        Plan plan = null;
+
+        if(planResult.isPresent()) plan = planResult.get();
+        else return null;
+
+        return plan;
+
+
+    }
+
+    // returns the subscription id which is currently active
+    private int customerIsActive(Customer cust) {
         Date startDate, endDate;
         Date now = new Date();
         List<Subscription> subs = subscriptionRepository.findSubscriptionsByCustomerId(cust.getId());
@@ -134,10 +160,10 @@ public class CustomerService implements ICustomerService {
             startDate = sub.getStartDate();
             endDate = sub.getEndDate();
             if (now.compareTo(startDate) >= 0 && now.compareTo(endDate) <= 0) {
-                return true;
+                return sub.getId();
             }
 
         }
-        return false;
+        return -1;
     }
 }
