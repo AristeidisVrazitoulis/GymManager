@@ -15,6 +15,14 @@
 <div class="container text-left">
     <h3>Customers Subscription Info</h3>
     <hr>
+
+    <div th:if="${#lists.isEmpty(subscriptions)}">
+        <p>No subscriptions</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(subscriptions)}">
+
+
+
     <div class="row">
         <div class="col"><span>First Name</span></div>
         <div class="col"><span th:text="${customer.firstName}"/></div>
@@ -53,11 +61,13 @@
         </tbody>
 
     </table>
+    </div>
     <a class="btn btn-success mt-2" th:href="@{/subscription-form(customerId=${customer.id}, planName=${planName})}" >Add subscription</a>
     <br>
 
     <a th:href="@{/customer-list}" >Go back</a>
 </div>
+
 
 </body>
 </html>

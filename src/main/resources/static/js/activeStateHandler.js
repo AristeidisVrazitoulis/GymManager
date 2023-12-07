@@ -12,4 +12,7 @@ for(var i = 0; i < activeList.length; i++)
         activeList[i].innerHTML = "<span style=\"color:red\">Inactive</span>";
     }
 }
-document.getElementById("total-active").innerHTML = totalActive.toString();
+var element = document.getElementById("total-active")
+if (element !== null){
+    element.innerHTML = totalActive.toString();
+}

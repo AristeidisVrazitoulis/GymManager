@@ -18,10 +18,10 @@ public class Customer {
     private int id;
 
     @Column(name="first_name")
-    @NotBlank(message = "Cannot be blank")
+    @NotBlank
     private String firstName;
 
-    @NotBlank(message = "Cannot be blank")
+    @NotBlank
     @Column(name="last_name")
     private String lastName;
 
